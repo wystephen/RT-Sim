@@ -34,6 +34,7 @@ class Scene : public QObject {
     line_list.push_back(LineSeg(Point(7, 4), Vector(0, 3)));
 
     drawScene();
+    return true;
   }
 
   bool loadScene(const QString s_str);
