@@ -37,15 +37,58 @@ class Scene : public QObject {
     return true;
   }
 
+  /**
+   * @brief loadScene
+   * @param s_str
+   *  each line of string represented a line segment in the scene.
+   * format:
+   * start_point_x,start_point_y,ori_vec_x,ori_vec_y
+   * @return
+   */
   bool loadScene(const QString s_str);
 
+  /**
+   * @brief loadBeacon
+   * @param b_str
+   * each line of string represented a beacon
+   * beacon_x, beacon_y
+   * @return
+   */
   bool loadBeacon(const QString b_str);
 
+  /**
+   * @brief loadTrajectory
+   * @param t_str
+   * @return
+   */
   bool loadTrajectory(const QString t_str);
 
+  /**
+   * @brief drawScene
+   * draw the scene, including scene, beacon, trajectory, current pose, current
+   * ray tracing result.
+   * @return
+   */
   bool drawScene();
 
+  /**
+   * @brief initalAxis
+   * initial axis based on line segment !!! WARNING.
+   * @return
+   */
+  bool initalAxis();
+
+  /**
+   * @brief toImage
+   * @param v in image frame
+   * @return
+   */
   Vector toImage(const Vector &v);
+  /**
+   * @brief toImage
+   * @param v in image frame
+   * @return
+   */
   Point toImage(const Point &v);
 
   // transform parameters
