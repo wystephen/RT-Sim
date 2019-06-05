@@ -26,13 +26,29 @@ CONFIG += c++11
 
 SOURCES += \
         main.cpp \
-        mainwindow.cpp
+        mainwindow.cpp \
+        ray.cpp \
+        scene.cpp
 
 HEADERS += \
-        mainwindow.h
+        geobase.h \
+        mainwindow.h \
+        ray.h \
+        scene.h
 
 FORMS += \
         mainwindow.ui
+
+win32{
+#openmp
+QMAKE_CXXFLAGS += -openmp
+QMAKE_LFLAGS += -openmp
+}
+unix{
+#openmp
+QMAKE_CXXFLAGS += -fopenmp
+QMAKE_LFLAGS += -fopenmp
+}
 
 # Default rules for deployment.
 qnx: target.path = /tmp/$${TARGET}/bin
