@@ -10,6 +10,12 @@ MainWindow::MainWindow(QWidget *parent)
 
   connect(&cur_scene, SIGNAL(newImage(QImage)), this, SLOT(draw_image(QImage)));
 
+  connect(this, SIGNAL(next_step()), &cur_scene, SLOT(next_step()));
+
+  connect(this, SIGNAL(prev_step()), &cur_scene, SLOT(prev_step()));
+
+  connect(this, SIGNAL(cal_step()), &cur_scene, SLOT(cal_step()));
+
   cur_scene.loadDefult();
 }
 
@@ -62,3 +68,14 @@ void MainWindow::on_btn_refresh_scene_clicked() {
   QString scene_str = ui->txtScene->toPlainText();
   cur_scene.loadScene(scene_str);
 }
+
+void MainWindow::on_btn_refresh_trajectory_clicked() {
+  QString tra_str = ui->txtTrajectory->toPlainText();
+  cur_scene.loadTrajectory(tra_str);
+}
+
+void MainWindow::on_btn_pre_step_clicked() { emit prev_step(); }
+
+void MainWindow::on_btn_newx_step_clicked() { emit next_step(); }
+
+void MainWindow::on_btn_calculate_step_clicked() { emit cal_step(); }

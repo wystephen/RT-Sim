@@ -21,6 +21,7 @@ class Scene : public QObject {
   std::vector<Point> beacon_list;  // valid beacons
 
   std::vector<Point> tra_list;  // valid trajectory
+  int trajectory_index = -1;
 
   /**
    * @brief loadDefult
@@ -109,6 +110,22 @@ class Scene : public QObject {
   void newImage(QImage img);
 
  public slots:
+
+  /**
+   * @brief next_step
+   * point to next road point.
+   */
+  void next_step();
+  /**
+   * @brief prev_step
+   * select previous road point.
+   */
+  void prev_step();
+  /**
+   * @brief cal_step
+   * calculate ray tracing to current point.
+   */
+  void cal_step();
 };
 
 #endif  // SCENE_H

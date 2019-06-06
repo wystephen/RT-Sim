@@ -21,7 +21,7 @@ bool Scene::drawScene() {
     line_pen.setWidth(10);
     painter.setPen(line_pen);
 
-#pragma omp parallel for num_threads(6)
+#pragma omp parallel for
     for (int i = 0; i < line_list.size(); ++i) {
       int x1 = line_list[i].start_point.x * x_scale + x_offset;
       int y1 = line_list[i].start_point.y * y_scale + y_offset;
@@ -36,14 +36,47 @@ bool Scene::drawScene() {
   if (beacon_list.size() > 0) {
     //    painter.setPen(QColor(55, 55, 0));
     QPen beacon_pen;
-    beacon_pen.setWidth(5);
+    beacon_pen.setWidth(20);
     beacon_pen.setColor(QColor(55, 55, 0));
     painter.setPen(beacon_pen);
 
-    //#pragma omp parallel for num_threads(6)
+#pragma omp parallel for
     for (int i = 0; i < beacon_list.size(); ++i) {
-      Point img_beacon_vec = toImage(beacon_list[i]);
-      painter.drawEllipse(img_beacon_vec.x, img_beacon_vec.y, 10, 10);
+      int xx = beacon_list[i].x * x_scale + x_offset;
+      int yy = beacon_list[i].y * y_scale + y_offset;
+      painter.drawPoint(xx, yy);
+    }
+  }
+
+  if (tra_list.size() > 0) {
+    QPen tra_pen;
+    tra_pen.setWidth(5);
+    tra_pen.setColor(QColor(100, 0, 100));
+    painter.setPen(tra_pen);
+#pragma omp parallel for
+    for (int i = 0; i < tra_list.size() - 1; ++i) {
+      Point p1 = toImage(tra_list[i]);
+      Point p2 = toImage(tra_list[i + 1]);
+      painter.drawLine(p1.x, p1.y, p2.x, p2.y);
+    }
+
+    QPen tra_p_pen;
+    tra_p_pen.setWidth(20);
+    tra_p_pen.setColor(QColor(0, 100, 200));
+    painter.setPen(tra_p_pen);
+
+#pragma omp parallel for
+    for (int i = 0; i < tra_list.size(); ++i) {
+      Point p = toImage(tra_list[i]);
+      painter.drawPoint(p.x, p.y);
+    }
+
+    if (trajectory_index >= 0 && trajectory_index < tra_list.size()) {
+      tra_p_pen.setColor(QColor(0, 10, 250));
+      tra_p_pen.setWidth(30);
+      painter.setPen(tra_p_pen);
+      Point p = toImage(tra_list[trajectory_index]);
+      painter.drawPoint(p.x, p.y);
     }
   }
 
@@ -177,4 +210,73 @@ bool Scene::loadBeacon(const QString b_str) {
   }
 }
 
-bool Scene::loadTrajectory(const QString t_str) { return true; }
+bool Scene::loadTrajectory(const QString t_str) {
+  std::vector<Point> tmp_tra_list;
+  for (auto line_str : t_str.split("\n")) {
+    auto unit_strs = line_str.split(",");
+    if (unit_strs.size() > 0) {
+      if (unit_strs[0] == "L" && unit_strs.size() == 6) {
+        try {
+          Point p(unit_strs[1].toDouble(), unit_strs[2].toDouble());
+          Vector v_step(unit_strs[3].toDouble(), unit_strs[4].toDouble());
+          int counter = unit_strs[5].toInt();
+          for (int i = 0; i < counter + 1; ++i) {
+            tmp_tra_list.push_back(Point(p.x, p.y));
+            p = p + v_step;
+          }
+        } catch (std::exception &e) {
+          std::cout << "some error at this line:[" << line_str.toStdString()
+                    << "] with" << e.what() << std::endl;
+        }
+      } else if (unit_strs[0] == "P" && unit_strs.size() == 3) {
+        try {
+          Point p(unit_strs[1].toDouble(), unit_strs[2].toDouble());
+          tmp_tra_list.push_back(p);
+
+        } catch (std::exception &e) {
+          std::cout << "some error at this line:[" << line_str.toStdString()
+                    << "] with" << e.what() << std::endl;
+        }
+      } else {
+        std::cout << "some error :" << line_str.toStdString() << std::endl;
+      }
+    }
+  }
+  if (tmp_tra_list.size() > 0) {
+    tra_list.clear();
+    for (auto p : tmp_tra_list) {
+      tra_list.push_back(p);
+    }
+    trajectory_index = 0;
+    drawScene();
+    return true;
+  } else {
+    return false;
+  }
+}
+
+void Scene::next_step() {
+  if (tra_list.size() > 0) {
+    trajectory_index += 1;
+    if (trajectory_index < 0) {
+      trajectory_index = 0;
+    }
+    if (trajectory_index > tra_list.size() - 1) {
+      trajectory_index = 0;
+    }
+    drawScene();
+  }
+}
+
+void Scene::prev_step() {
+  if (tra_list.size() > 0) {
+    trajectory_index -= 1;
+    if (trajectory_index > tra_list.size() - 1) {
+      trajectory_index = tra_list.size() - 1;
+    }
+    if (trajectory_index <= 0) {
+      trajectory_index = tra_list.size() - 1;
+    }
+    drawScene();
+  }
+}

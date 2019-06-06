@@ -58,3 +58,6 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 DISTFILES += \
     rt-ref.py \
     sim_model.qmodel
+
+RESOURCES += \
+    base_rc.qrc
