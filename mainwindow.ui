@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>651</width>
-    <height>658</height>
+    <width>1102</width>
+    <height>700</height>
    </rect>
   </property>
   <property name="sizePolicy">
@@ -62,7 +62,7 @@
    <property name="styleSheet">
     <string notr="true"/>
    </property>
-   <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0" columnstretch="0,0,0,0">
+   <layout class="QGridLayout" name="gridLayout" rowstretch="0,0,0,0" columnstretch="0,0,0">
     <property name="topMargin">
      <number>6</number>
     </property>
@@ -153,12 +153,20 @@
         <rect>
          <x>0</x>
          <y>210</y>
-         <width>121</width>
+         <width>161</width>
          <height>131</height>
         </rect>
        </property>
        <property name="plainText">
-        <string>2,2</string>
+        <string>2,2
+2,5
+2,8
+8,2
+8,8
+13,2
+13,5
+13,8
+</string>
        </property>
       </widget>
       <widget class="QPushButton" name="btn_refresh_beacon">
@@ -204,10 +212,22 @@
      </widget>
     </item>
     <item row="2" column="2">
-     <widget class="QPlainTextEdit" name="plainTextEdit_2"/>
+     <widget class="QPlainTextEdit" name="txtScene">
+      <property name="plainText">
+       <string>4,3,0,2
+4,6,0,2
+12,3,0,2
+12,6,0,2
+7,5,2,0
+0,0,15,0
+0,0,0,10
+15,0,0,10
+0,10,15,0</string>
+      </property>
+     </widget>
     </item>
     <item row="2" column="0">
-     <widget class="QPlainTextEdit" name="plainTextEdit">
+     <widget class="QPlainTextEdit" name="txtTrajectory">
       <property name="plainText">
        <string>L,2,2,5,2,1
 P,5,5
@@ -222,7 +242,7 @@ p,5,6</string>
     <rect>
      <x>0</x>
      <y>0</y>
-     <width>651</width>
+     <width>1102</width>
      <height>22</height>
     </rect>
    </property>

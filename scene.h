@@ -22,6 +22,11 @@ class Scene : public QObject {
 
   std::vector<Point> tra_list;  // valid trajectory
 
+  /**
+   * @brief loadDefult
+   * Load defualt empty scene.
+   * @return
+   */
   bool loadDefult() {
     line_list.push_back(LineSeg(Point(0, 0), Vector(10, 0)));
     line_list.push_back(LineSeg(Point(0, 0), Vector(0, 10)));
@@ -32,6 +37,7 @@ class Scene : public QObject {
     line_list.push_back(LineSeg(Point(5, 7), Vector(-3, 0)));
     line_list.push_back(LineSeg(Point(5, 3), Vector(3, 0)));
     line_list.push_back(LineSeg(Point(7, 4), Vector(0, 3)));
+    //    line_list.push_back(LineSeg(Point(10, 5), Vector(10, 0)));
 
     drawScene();
     return true;

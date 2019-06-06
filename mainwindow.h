@@ -30,6 +30,8 @@ class MainWindow : public QMainWindow {
   void draw_image(QImage img);
  private slots:
   void on_actionRefresh_Scene_triggered();
+  void on_btn_refresh_beacon_clicked();
+  void on_btn_refresh_scene_clicked();
 };
 
 #endif  // MAINWINDOW_H

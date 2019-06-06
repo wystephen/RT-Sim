@@ -15,21 +15,17 @@ MainWindow::MainWindow(QWidget *parent)
 
 MainWindow::~MainWindow() { delete ui; }
 
+/**
+ * @brief MainWindow::draw_image
+ * draw image of current scene.
+ * @param img
+ */
 void MainWindow::draw_image(QImage img) {
   int width = img_label->width();
   int height = img_label->height();
-  std::cout << "drawing image:" << std::endl;
-
-  //  if (img.width() / width * height > img.height()) {
-  //    img_label->setPixmap(QPixmap::fromImage(img).scaledToWidth(width));
-  //  } else {
-  //    img_label->setPixmap(QPixmap::fromImage(img).scaledToHeight(width));
-  //  }
   img_label->setPixmap(QPixmap::fromImage(img).scaled(
       width, height, Qt::AspectRatioMode::KeepAspectRatio,
       Qt::TransformationMode::SmoothTransformation));
-
-  printf("draw image\n");
 }
 
 bool MainWindow::initial_draw() {
@@ -55,3 +51,14 @@ bool MainWindow::initial_draw() {
 }
 
 void MainWindow::on_actionRefresh_Scene_triggered() { cur_scene.drawScene(); }
+
+void MainWindow::on_btn_refresh_beacon_clicked() {
+  QString beacon_str;
+  beacon_str = ui->txt_beacon->toPlainText();
+  cur_scene.loadBeacon(beacon_str);
+}
+
+void MainWindow::on_btn_refresh_scene_clicked() {
+  QString scene_str = ui->txtScene->toPlainText();
+  cur_scene.loadScene(scene_str);
+}
