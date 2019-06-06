@@ -7,6 +7,7 @@
 #include <QPainter>
 
 #include <geobase.h>
+#include <ray.h>
 
 #include <omp.h>
 #include <iostream>
@@ -16,12 +17,16 @@ class Scene : public QObject {
  public:
   explicit Scene(QObject *parent = nullptr);
 
-  std::vector<LineSeg> line_list;  // scene
+  std::vector<LineSeg> line_list_;  // scene
 
-  std::vector<Point> beacon_list;  // valid beacons
+  std::vector<Point> beacon_list_;  // valid beacons
 
-  std::vector<Point> tra_list;  // valid trajectory
-  int trajectory_index = -1;
+  std::vector<Point> tra_list_;  // valid trajectory
+  int trajectory_index_ = -1;
+
+  std::vector<Ray> valid_ray_list_;
+  double angle_resolution_ = 0.1 / 180.0 * M_PI;
+  double reach_threshold_ = 0.1;
 
   /**
    * @brief loadDefult
@@ -29,15 +34,15 @@ class Scene : public QObject {
    * @return
    */
   bool loadDefult() {
-    line_list.push_back(LineSeg(Point(0, 0), Vector(10, 0)));
-    line_list.push_back(LineSeg(Point(0, 0), Vector(0, 10)));
-    line_list.push_back(LineSeg(Point(10, 0), Vector(0, 10)));
-    line_list.push_back(LineSeg(Point(0, 10), Vector(10, 0)));
-    line_list.push_back(LineSeg(Point(5, 2), Vector(0, 6)));
-    line_list.push_back(LineSeg(Point(3, 6), Vector(0, -3)));
-    line_list.push_back(LineSeg(Point(5, 7), Vector(-3, 0)));
-    line_list.push_back(LineSeg(Point(5, 3), Vector(3, 0)));
-    line_list.push_back(LineSeg(Point(7, 4), Vector(0, 3)));
+    line_list_.push_back(LineSeg(Point(0, 0), Vector(10, 0)));
+    line_list_.push_back(LineSeg(Point(0, 0), Vector(0, 10)));
+    line_list_.push_back(LineSeg(Point(10, 0), Vector(0, 10)));
+    line_list_.push_back(LineSeg(Point(0, 10), Vector(10, 0)));
+    line_list_.push_back(LineSeg(Point(5, 2), Vector(0, 6)));
+    line_list_.push_back(LineSeg(Point(3, 6), Vector(0, -3)));
+    line_list_.push_back(LineSeg(Point(5, 7), Vector(-3, 0)));
+    line_list_.push_back(LineSeg(Point(5, 3), Vector(3, 0)));
+    line_list_.push_back(LineSeg(Point(7, 4), Vector(0, 3)));
     //    line_list.push_back(LineSeg(Point(10, 5), Vector(10, 0)));
 
     drawScene();
@@ -99,10 +104,10 @@ class Scene : public QObject {
   Point toImage(const Point &v);
 
   // transform parameters
-  double img_height = 1000;
-  double img_width = 1000;
-  double x_scale = 100.0;
-  double y_scale = 100.0;
+  double img_height_ = 1000;
+  double img_width_ = 1000;
+  double x_scale_ = 100.0;
+  double y_scale_ = 100.0;
   double x_offset = 0;
   double y_offset = 0;
 
@@ -115,17 +120,17 @@ class Scene : public QObject {
    * @brief next_step
    * point to next road point.
    */
-  void next_step();
+  void nextStep();
   /**
    * @brief prev_step
    * select previous road point.
    */
-  void prev_step();
+  void prevStep();
   /**
    * @brief cal_step
    * calculate ray tracing to current point.
    */
-  void cal_step();
+  void calStep();
 };
 
 #endif  // SCENE_H

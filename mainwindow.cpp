@@ -10,11 +10,11 @@ MainWindow::MainWindow(QWidget *parent)
 
   connect(&cur_scene, SIGNAL(newImage(QImage)), this, SLOT(draw_image(QImage)));
 
-  connect(this, SIGNAL(next_step()), &cur_scene, SLOT(next_step()));
+  connect(this, SIGNAL(next_step()), &cur_scene, SLOT(nextStep()));
 
-  connect(this, SIGNAL(prev_step()), &cur_scene, SLOT(prev_step()));
+  connect(this, SIGNAL(prev_step()), &cur_scene, SLOT(prevStep()));
 
-  connect(this, SIGNAL(cal_step()), &cur_scene, SLOT(cal_step()));
+  connect(this, SIGNAL(cal_step()), &cur_scene, SLOT(calStep()));
 
   cur_scene.loadDefult();
 }
