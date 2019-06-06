@@ -24,3 +24,5 @@ bool Scene::drawScene() {
   emit newImage(img);
   return true;
 }
+
+bool initialAxis() {}

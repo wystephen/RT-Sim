@@ -56,4 +56,5 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 DISTFILES += \
-    rt-ref.py
+    rt-ref.py \
+    sim_model.qmodel
