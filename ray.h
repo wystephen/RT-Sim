@@ -30,6 +30,8 @@ class Ray : public QObject {
    */
   double detect_intersection(LineSeg l);
 
+  bool reflection(const Point &p);
+
  signals:
 
  public slots:
