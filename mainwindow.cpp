@@ -74,8 +74,14 @@ void MainWindow::on_btn_refresh_trajectory_clicked() {
   cur_scene.loadTrajectory(tra_str);
 }
 
-void MainWindow::on_btn_pre_step_clicked() { emit prev_step(); }
+void MainWindow::on_btn_pre_step_clicked() {
+  emit prev_step();
+  emit cal_step();
+}
 
-void MainWindow::on_btn_newx_step_clicked() { emit next_step(); }
+void MainWindow::on_btn_newx_step_clicked() {
+  emit next_step();
+  emit cal_step();
+}
 
 void MainWindow::on_btn_calculate_step_clicked() { emit cal_step(); }

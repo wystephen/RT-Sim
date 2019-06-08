@@ -4,6 +4,8 @@
 #include <math.h>
 #include <cmath>
 
+#include <iostream>
+
 #define EPS 1e-8
 
 struct Vector {
@@ -32,8 +34,12 @@ struct Vector {
   }
   Vector normalize() {
     double length = len();
-    if (length > 0) return {x / length, y / length};
-    return {0., 0.};
+    if (length > EPS) {
+      return {x / length, y / length};
+    } else {
+      std::cout << "some proble of vector:" << x << "," << y << std::endl;
+      return {0., 0.};
+    }
   }
 
   double cos(Vector v) {

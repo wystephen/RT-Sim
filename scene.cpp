@@ -42,7 +42,7 @@ bool Scene::drawScene() {
     beacon_pen.setColor(QColor(55, 55, 0));
     painter.setPen(beacon_pen);
 
-#pragma omp parallel for
+    //#pragma omp parallel for
     for (int i = 0; i < beacon_list_.size(); ++i) {
       int xx = beacon_list_[i].x * x_scale_ + x_offset;
       int yy = beacon_list_[i].y * y_scale_ + y_offset;
@@ -55,7 +55,7 @@ bool Scene::drawScene() {
     tra_pen.setWidth(5);
     tra_pen.setColor(QColor(100, 0, 100));
     painter.setPen(tra_pen);
-#pragma omp parallel for
+    //#pragma omp parallel for
     for (int i = 0; i < tra_list_.size() - 1; ++i) {
       Point p1 = toImage(tra_list_[i]);
       Point p2 = toImage(tra_list_[i + 1]);
@@ -67,7 +67,7 @@ bool Scene::drawScene() {
     tra_p_pen.setColor(QColor(0, 100, 200));
     painter.setPen(tra_p_pen);
 
-#pragma omp parallel for
+    //#pragma omp parallel for
     for (int i = 0; i < tra_list_.size(); ++i) {
       Point p = toImage(tra_list_[i]);
       painter.drawPoint(p.x, p.y);
@@ -83,16 +83,21 @@ bool Scene::drawScene() {
   }
 
   if (valid_ray_list_.size() > 0) {
-    //    for (int i = 0; i < valid_ray_list_.size(); ++i) {
-    //      Ray &ray = valid_ray_list_[i];
+    QPen tracing_pen;
+    tracing_pen.setWidth(2);
+    painter.setPen(tracing_pen);
 
-    //      for (int k = 0; k < ray.line_list.size(); ++k) {
-    //        auto l = ray.line_list[k];
-    //        painter.drawLine(l.start_point.x, l.start_point.y,
-    //                         l.start_point.x + l.ori_vec.x,
-    //                         l.start_point.y + l.ori_vec.y);
-    //      }
-    //    }
+    for (int i = 0; i < valid_ray_list_.size(); ++i) {
+      Ray &ray = valid_ray_list_[i];
+
+      for (int k = 0; k < ray.line_list.size(); ++k) {
+        auto l = ray.line_list[k];
+        Point sp = toImage(l.start_point);
+        Point ep = toImage(Point(l.start_point.x + l.ori_vec.x,
+                                 l.start_point.y + l.ori_vec.y));
+        painter.drawLine(sp.x, sp.y, ep.x, ep.y);
+      }
+    }
   }
 
   emit newImage(img);
@@ -296,47 +301,67 @@ void Scene::prevStep() {
   }
 }
 
-void Scene::calStep() {
+void Scene::calStep() { calRayTracing(); }
+
+bool Scene::calRayTracing() {
   if (line_list_.size() > 0 && beacon_list_.size() > 0 &&
-      tra_list_.size() > trajectory_index_ && trajectory_index_ > 0) {
+      tra_list_.size() > trajectory_index_ && trajectory_index_ >= 0) {
     // begein to calculate the whole tracing system
 
     if (valid_ray_list_.size() > 0) {
       valid_ray_list_.clear();
     }
 
-    int counter = 10000;
-    double step_length = 2.0 * M_PI / double(counter);
+    int counter = 100000;
+    double step_length = 360.0 / double(counter);
+
+    Point target_point = tra_list_[trajectory_index_];
 
     for (int bi = 0; bi < beacon_list_.size(); ++bi) {
-      for (int i = 0; i < counter; ++i) {
-        double theta = -1.0 * M_PI + double(i) * step_length;
+#pragma omp parallel for
+      for (int i = 0; i < counter + 1; ++i) {
+        double theta = -1.0 * M_PI + (step_length * double(i)) / 180.0 * M_PI;
+        //        if (i == counter - 1) {
+        //          std::cout << "max theata in degree:" << theta / M_PI * 180.0
+        //                    << std::endl;
+        //        }
+
+        //        if (i == 0) {
+        //          std::cout << "min theata in degree:" << theta / M_PI * 180.0
+        //                    << std::endl;
+        //        }
+
         Ray ray;
         ray.Initial(beacon_list_[bi],
-                    Vector(1.0 * cos(theta), 1.0 * sin(theta)));
+                    Vector(1.0 * cosf(theta), 1.0 * sinf(theta)).normalize());
         for (int depth = 0; depth < 5; ++depth) {
-          if (!ray.reached_flag) {
-            double min_dis(1e64);
-            Point min_p(0, 0);
-            LineSeg min_l;
-            for (LineSeg l : line_list_) {
-              Point tmp_p(0, 0);
-              double dis = ray.detect_intersection(l, tmp_p);
-              if ((dis > 0.0 && dis < min_dis)) {
-                min_dis = dis;
-                min_p = Point(tmp_p.x, tmp_p.y);
-                min_l = LineSeg(Point(l.start_point.x, l.start_point.y),
-                                Vector(l.ori_vec.x, l.ori_vec.y));
-              }
+          double min_dis(1e64);
+          Point min_p(0, 0);
+          LineSeg min_l;
+          int valid_index = -1;
+          for (int vi = 0; vi < line_list_.size(); ++vi) {
+            Point tmp_p(0, 0);
+            auto l = line_list_[vi];
+            double dis = ray.detect_intersection(l, tmp_p);
+            if ((dis > 0.0 && dis < min_dis)) {
+              min_dis = dis;
+              min_p = Point(tmp_p.x, tmp_p.y);
+              min_l = LineSeg(Point(l.start_point.x, l.start_point.y),
+                              Vector(l.ori_vec.x, l.ori_vec.y));
+              valid_index = vi;
             }
-            if (ray.reachedPoint(min_p, min_dis)) {
-              valid_ray_list_.push_back(ray);
-              std::cout << "add a new ray" << std::endl;
-              std::cout << "ray line trace:" << ray.line_list.size()
-                        << "bi:" << bi << std::endl;
+          }
+          if (valid_index > 0) {
+            if (ray.reachedPoint(target_point, min_dis)) {
+#pragma omp critical
+              { valid_ray_list_.push_back(ray); }
+
+              break;
             } else {
               ray.reflection(min_p, min_l.getNormalVector());
             }
+          } else {
+            break;
           }
         }
       }

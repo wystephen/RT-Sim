@@ -49,7 +49,17 @@ double Ray::detect_intersection(const LineSeg &l, Point &intersect_point) {
 }
 
 bool Ray::reflection(Point p, Vector norm_vec) {
-  double idotn2 = (norm_vec.x * cur_vec.x + norm_vec.y * cur_vec.y) * -2.0;
+  if (cur_vec.cos(norm_vec) < 0.0) {
+    //        norm_vec = norm_vec * -1.0;
+    norm_vec.x *= -1.0;
+    norm_vec.y *= -1.0;
+  }
+  if (norm_vec.len() < EPS) {
+    std::cout << "som error of reflection using error norm vector:"
+              << std::endl;
+  }
+
+  double idotn2 = (norm_vec.x * cur_vec.x + norm_vec.y * cur_vec.y);
   double x = cur_vec.x;
   double y = cur_vec.y;
 
@@ -57,8 +67,10 @@ bool Ray::reflection(Point p, Vector norm_vec) {
                 Vector(p.x - cur_point.x, p.y - cur_point.y));
   line_list.push_back(l_ray);
 
-  cur_vec =
-      Vector(x + idotn2 * norm_vec.x, y + idotn2 * norm_vec.y).normalize();
+  Vector reflec_vec(x - idotn2 * norm_vec.x * 2.0,
+                    y - idotn2 * norm_vec.y * 2.0);
+
+  cur_vec = reflec_vec.normalize();
   cur_point = Point(p.x, p.y);
 
   return true;

@@ -111,6 +111,8 @@ class Scene : public QObject {
   double x_offset = 0;
   double y_offset = 0;
 
+  bool calRayTracing();
+
  signals:
   void newImage(QImage img);
 

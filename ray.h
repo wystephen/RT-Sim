@@ -1,8 +1,6 @@
 #ifndef RAY_H
 #define RAY_H
 
-#include <QObject>
-
 #include <geobase.h>
 #include <vector>
 
@@ -12,7 +10,9 @@
 
 class Ray {
  public:
-  explicit Ray() {}
+  Ray() {}
+
+  ~Ray() {}
 
   Ray(const Ray &r)
       : start_point(r.start_point.x, r.start_point.y),
