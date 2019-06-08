@@ -72,7 +72,7 @@ struct LineSeg {
   Vector ori_vec;
 
   Vector getNormalVector() {
-    if (std::fabs(ori_vec.x) > EPS) {
+    if (std::fabs(ori_vec.x) > 0.0) {
       return Vector(-1.0 * ori_vec.y / ori_vec.x, 1.0);
     } else {
       return Vector(1.0, 0.0);

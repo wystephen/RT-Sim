@@ -14,73 +14,11 @@ bool Scene::drawScene() {
   //  }
   QPainter painter(&img);
 
-  if (line_list_.size() > 0) {
-    //    painter.setPen(QColor(255, 0, 0));
-    QPen line_pen;
-    line_pen.setColor(QColor(255, 0, 0));
-    line_pen.setWidth(10);
-    painter.setPen(line_pen);
+  drawEnvironment(painter);
 
-#pragma omp parallel for
-    for (int i = 0; i < line_list_.size(); ++i) {
-      int x1 = line_list_[i].start_point.x * x_scale_ + x_offset;
-      int y1 = line_list_[i].start_point.y * y_scale_ + y_offset;
-      int x2 =
-          (line_list_[i].start_point.x + line_list_[i].ori_vec.x) * x_scale_ +
-          x_offset;
-      int y2 =
-          (line_list_[i].start_point.y + line_list_[i].ori_vec.y) * y_scale_ +
-          y_offset;
-      painter.drawLine(x1, y1, x2, y2);
-    }
-  }
+  drawBeacons(painter);
 
-  if (beacon_list_.size() > 0) {
-    //    painter.setPen(QColor(55, 55, 0));
-    QPen beacon_pen;
-    beacon_pen.setWidth(20);
-    beacon_pen.setColor(QColor(55, 55, 0));
-    painter.setPen(beacon_pen);
-
-#pragma omp parallel for
-    for (int i = 0; i < beacon_list_.size(); ++i) {
-      int xx = beacon_list_[i].x * x_scale_ + x_offset;
-      int yy = beacon_list_[i].y * y_scale_ + y_offset;
-      painter.drawPoint(xx, yy);
-    }
-  }
-
-  if (tra_list_.size() > 0) {
-    QPen tra_pen;
-    tra_pen.setWidth(5);
-    tra_pen.setColor(QColor(100, 0, 100));
-    painter.setPen(tra_pen);
-#pragma omp parallel for
-    for (int i = 0; i < tra_list_.size() - 1; ++i) {
-      Point p1 = toImage(tra_list_[i]);
-      Point p2 = toImage(tra_list_[i + 1]);
-      painter.drawLine(p1.x, p1.y, p2.x, p2.y);
-    }
-
-    QPen tra_p_pen;
-    tra_p_pen.setWidth(20);
-    tra_p_pen.setColor(QColor(0, 100, 200));
-    painter.setPen(tra_p_pen);
-
-#pragma omp parallel for
-    for (int i = 0; i < tra_list_.size(); ++i) {
-      Point p = toImage(tra_list_[i]);
-      painter.drawPoint(p.x, p.y);
-    }
-
-    if (trajectory_index_ >= 0 && trajectory_index_ < tra_list_.size()) {
-      tra_p_pen.setColor(QColor(0, 10, 250));
-      tra_p_pen.setWidth(30);
-      painter.setPen(tra_p_pen);
-      Point p = toImage(tra_list_[trajectory_index_]);
-      painter.drawPoint(p.x, p.y);
-    }
-  }
+  drawTrajectory(painter);
 
   if (valid_ray_list_.size() > 0) {
     QPen tracing_pen;
@@ -312,21 +250,23 @@ bool Scene::calRayTracing() {
       valid_ray_list_.clear();
     }
 
-    int counter = 100000;
+    int counter = 1000000;
     double step_length = 360.0 / double(counter);
 
     Point target_point = tra_list_[trajectory_index_];
 
     for (int bi = 0; bi < beacon_list_.size(); ++bi) {
+      Point beacon_point = beacon_list_[bi];
+
 #pragma omp parallel for
       for (int i = 0; i < counter + 1; ++i) {
-        double theta = -1.0 * M_PI + (step_length * double(i)) / 180.0 * M_PI;
-
+        double ifloat = i;
+        double theta = -1.0 * M_PI + (step_length * ifloat) / 180.0 * M_PI;
         Ray ray;
-        ray.Initial(beacon_list_[bi],
+        ray.Initial(beacon_point,
                     Vector(1.0 * cosf(theta), 1.0 * sinf(theta)).normalize());
-        for (int depth = 0; depth < 5; ++depth) {
-          double min_dis(1e64);
+        for (int depth = 0; depth < 10; ++depth) {
+          double min_dis(-1.0);
           Point min_p(0, 0);
           LineSeg min_l;
           int valid_index = -1;
@@ -334,7 +274,7 @@ bool Scene::calRayTracing() {
             Point tmp_p(0, 0);
             auto l = line_list_[vi];
             double dis = ray.detect_intersection(l, tmp_p);
-            if ((dis > 0.0 && dis < min_dis)) {
+            if ((dis > 0.0 && dis < min_dis) || (dis > 0.0 && min_dis < 0.0)) {
               min_dis = dis;
               min_p = Point(tmp_p.x, tmp_p.y);
               min_l = LineSeg(Point(l.start_point.x, l.start_point.y),
@@ -352,6 +292,7 @@ bool Scene::calRayTracing() {
               ray.reflection(min_p, min_l.getNormalVector());
             }
           } else {
+            //            std::cout << "some error happend." << std::endl;
             break;
           }
         }

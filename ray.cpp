@@ -14,7 +14,7 @@ double Ray::detect_intersection(const LineSeg &l, Point &intersect_point) {
    */
 
   double Adet = a * d - b * c;
-  if (std::abs(Adet) > EPS) {
+  if (std::abs(Adet) > 0.0) {
     double Astar = 1.0 / Adet;
 
     double inv_a(Astar * d);
@@ -28,7 +28,7 @@ double Ray::detect_intersection(const LineSeg &l, Point &intersect_point) {
     double ray_fac = inv_a * g1 + inv_b * g2;
     double line_fac = inv_c * g1 + inv_d * g2;
 
-    if (ray_fac > 0 && line_fac > 0 && line_fac < 1.0) {
+    if (ray_fac > 0.0 && line_fac > 0.0 && line_fac < 1.0) {
       Point p_ray = cur_point + cur_vec * ray_fac;
       Point p_line = Point(l.start_point) + Vector(l.ori_vec) * line_fac;
       if (p_ray.isClose(p_line)) {
@@ -44,13 +44,15 @@ double Ray::detect_intersection(const LineSeg &l, Point &intersect_point) {
     }
 
   } else {
+    //    std::cout << "A:" << a << "," << b << "\n" << c << "," << d <<
+    //    std::endl;
+
     return -1.0;
   }
 }
 
 bool Ray::reflection(Point p, Vector norm_vec) {
   if (cur_vec.cos(norm_vec) < 0.0) {
-    //        norm_vec = norm_vec * -1.0;
     norm_vec.x *= -1.0;
     norm_vec.y *= -1.0;
   }
@@ -74,12 +76,13 @@ bool Ray::reflection(Point p, Vector norm_vec) {
       Vector(x - idotn2 * norm_vec.x * 2.0, y - idotn2 * norm_vec.y * 2.0)
           .normalize();
 
-  //  if (1.0 - cur_vec.cos(reflec_vec) < EPS) {
-  //    std::cout << "reflec vec:" << reflec_vec.x << "," << reflec_vec.y
-  //              << "cur vec:" << cur_vec.x << "," << cur_vec.y << std::endl;
+  //  if (norm_vec.cos(reflec_vec) > 0.0) {
+  //    cur_vec = Vector(reflec_vec.x * -1.0, reflec_vec.y * -1.0);
+  //  } else {
+  cur_vec = Vector(reflec_vec.x, reflec_vec.y);
   //  }
-
-  cur_vec = reflec_vec.normalize();
+  //  cur_vec.reflect(norm_vec);
+  //  cur_vec = cur_vec.normalize();
   cur_point = Point(p.x, p.y);
 
   return true;
@@ -87,8 +90,8 @@ bool Ray::reflection(Point p, Vector norm_vec) {
 
 bool Ray::reachedPoint(Point p, double max_dis) {
   Vector pv_vec = Vector(p.x - cur_point.x, p.y - cur_point.y);
-  double cos_theta = pv_vec.cos(cur_vec);
-  if (sqrt(1.0 - cos_theta * cos_theta) * pv_vec.len() < 0.05 &&
+  double cos_theta = std::acos(pv_vec.cos(cur_vec));
+  if (sqrt(1.0 - cos_theta * cos_theta) * pv_vec.len() < 0.1 &&
       pv_vec.len() < max_dis) {
     line_list.push_back(
         LineSeg(cur_point, Vector(p.x - cur_point.x, p.y - cur_point.y)));
