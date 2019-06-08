@@ -12,23 +12,23 @@ class Ray {
  public:
   Ray() {}
 
-  ~Ray() {}
+  //  ~Ray() {}
 
-  Ray(const Ray &r)
-      : start_point(r.start_point.x, r.start_point.y),
-        cur_point(r.cur_point.x, r.cur_point.y),
-        cur_vec(r.cur_vec.x, r.cur_vec.y),
-        line_list() {
-    for (LineSeg l : r.line_list) {
-      line_list.push_back(LineSeg(Point(l.start_point.x, l.start_point.y),
-                                  Vector(l.ori_vec.x, l.ori_vec.y)));
-    }
-  }
+  //  Ray(const Ray &r)
+  //      : start_point(r.start_point.x, r.start_point.y),
+  //        cur_point(r.cur_point.x, r.cur_point.y),
+  //        cur_vec(r.cur_vec.x, r.cur_vec.y),
+  //        line_list() {
+  //    for (LineSeg l : r.line_list) {
+  //      line_list.push_back(LineSeg(Point(l.start_point.x, l.start_point.y),
+  //                                  Vector(l.ori_vec.x, l.ori_vec.y)));
+  //    }
+  //  }
 
   bool Initial(Point s_p, Vector s_v) {
     start_point = s_p;
-    cur_point = s_p;
-    cur_vec = s_v;
+    cur_point = Point(s_p.x, s_p.y);
+    cur_vec = Vector(s_v.x, s_v.y);
     return true;
   }
 

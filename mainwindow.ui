@@ -158,7 +158,10 @@
         </rect>
        </property>
        <property name="plainText">
-        <string>1,1</string>
+        <string>1,1
+4,3
+9,9
+2,8</string>
        </property>
       </widget>
       <widget class="QPushButton" name="btn_refresh_beacon">
@@ -247,8 +250,10 @@
     <item row="2" column="0">
      <widget class="QPlainTextEdit" name="txtTrajectory">
       <property name="plainText">
-       <string>P,8,8
-P,4,6</string>
+       <string>L,0.5,0.5,1.0,0,9
+L,9.5,1.0,0,1.0,8
+L,9.5,9.5,-1.0,0,9
+L,0.5,9,0,-1.0,8</string>
       </property>
      </widget>
     </item>

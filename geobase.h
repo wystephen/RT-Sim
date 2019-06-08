@@ -24,10 +24,8 @@ struct Vector {
     return {x * f, y * f};
   }
   Vector operator/(double f) { return {x / f, y / f}; }
-  double len()  //ÏòÁ¿³¤¶È
-  {
-    return sqrt(x * x + y * y);
-  }
+  // length of the vector.
+  double len() { return sqrt(x * x + y * y); }
   Vector reflect(const Vector normal) {
     double idotn2 = (normal.x * x + normal.y * y) * -2.;
     return {x + idotn2 * normal.x, y + idotn2 * normal.y};
@@ -72,7 +70,7 @@ struct LineSeg {
   Vector ori_vec;
 
   Vector getNormalVector() {
-    if (std::fabs(ori_vec.x) > 0.0) {
+    if (std::fabs(ori_vec.x) > EPS) {
       return Vector(-1.0 * ori_vec.y / ori_vec.x, 1.0);
     } else {
       return Vector(1.0, 0.0);

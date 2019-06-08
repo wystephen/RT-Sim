@@ -212,4 +212,28 @@ class Scene : public QObject {
   void calStep();
 };
 
+inline void testRayIntersection() {
+  Ray ray;
+  ray.Initial(Point(0, 0), Vector(1, 0));
+
+  for (int i = 0; i < 10; ++i) {
+    Point ip(0, 0);
+    LineSeg l(Point(2, i - 5), Vector(3, 3));
+    double dis = ray.detect_intersection(l, ip);
+    std::cout << "intersection checking:" << i << "ray. inter:" << dis
+              << "ip:" << ip.x << "," << ip.y << std::endl;
+  }
+}
+inline void testRayIntersectionY() {
+  Ray ray;
+  ray.Initial(Point(0, 0), Vector(0, 1));
+
+  for (int i = 0; i < 10; ++i) {
+    Point ip(0, 0);
+    LineSeg l(Point(i - 5, 3), Vector(3, 0));
+    double dis = ray.detect_intersection(l, ip);
+    std::cout << "intersection checkingY:" << i << "ray. inter:" << dis
+              << "ip:" << ip.x << "," << ip.y << std::endl;
+  }
+}
 #endif  // SCENE_H

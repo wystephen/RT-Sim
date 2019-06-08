@@ -34,6 +34,8 @@ bool Scene::drawScene() {
         Point ep = toImage(Point(l.start_point.x + l.ori_vec.x,
                                  l.start_point.y + l.ori_vec.y));
         painter.drawLine(sp.x, sp.y, ep.x, ep.y);
+        painter.drawLine(ep.x - 10, ep.y - 10, ep.x + 10, ep.y + 10);
+        painter.drawLine(ep.x - 10, ep.y + 10, ep.x + 10, ep.y - 10);
       }
     }
   }
@@ -250,31 +252,42 @@ bool Scene::calRayTracing() {
       valid_ray_list_.clear();
     }
 
-    int counter = 1000000;
+    int counter = 1800000;
     double step_length = 360.0 / double(counter);
 
     Point target_point = tra_list_[trajectory_index_];
+
+    std::cout << "=====================LINES========================"
+              << std::endl;
+    for (auto l : line_list_) {
+      std::cout << l.start_point.x << "," << l.start_point.y << ","
+                << l.ori_vec.x << "," << l.ori_vec.y << std::endl;
+    }
+
+    std::cout << "=====================LINES========================"
+              << std::endl;
 
     for (int bi = 0; bi < beacon_list_.size(); ++bi) {
       Point beacon_point = beacon_list_[bi];
 
 #pragma omp parallel for
-      for (int i = 0; i < counter + 1; ++i) {
+      for (int i = 0; i < counter * 3; ++i) {
         double ifloat = i;
-        double theta = -1.0 * M_PI + (step_length * ifloat) / 180.0 * M_PI;
+        double theta = double(i * 360) / double(counter) * M_PI / 180.0 - M_PI;
         Ray ray;
         ray.Initial(beacon_point,
-                    Vector(1.0 * cosf(theta), 1.0 * sinf(theta)).normalize());
-        for (int depth = 0; depth < 10; ++depth) {
+                    Vector(1.0 * std::cos(theta), 1.0 * std::sin(theta)));
+
+        for (int depth = 0; depth < 5; ++depth) {
           double min_dis(-1.0);
-          Point min_p(0, 0);
+          Point min_p(-1000, -1000);
           LineSeg min_l;
           int valid_index = -1;
           for (int vi = 0; vi < line_list_.size(); ++vi) {
             Point tmp_p(0, 0);
             auto l = line_list_[vi];
             double dis = ray.detect_intersection(l, tmp_p);
-            if ((dis > 0.0 && dis < min_dis) || (dis > 0.0 && min_dis < 0.0)) {
+            if ((dis >= 0.0 && dis < min_dis) || (dis > 0.0 && min_dis < 0.0)) {
               min_dis = dis;
               min_p = Point(tmp_p.x, tmp_p.y);
               min_l = LineSeg(Point(l.start_point.x, l.start_point.y),
@@ -296,9 +309,15 @@ bool Scene::calRayTracing() {
             break;
           }
         }
+        //        if (i % 1800 == 0) {
+        //#pragma omp critical
+        //          { valid_ray_list_.push_back(ray); }
+        //        }
       }
     }
   }
 
   drawScene();
+  //  testRayIntersection();
+  //  testRayIntersectionY();
 }
