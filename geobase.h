@@ -47,6 +47,7 @@ struct Vector {
     double n1 = sqrt(x * x + y * y);
     double n2 = sqrt(v.x * v.x + v.y * v.y);
     if (std::abs(n1) < EPS || std::abs(n2) < EPS) {
+      std::cout << "n1 or n2 len equal to zero" << std::endl;
       return -1.0;
     } else {
       return cross / n1 / n2;

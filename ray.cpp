@@ -62,13 +62,22 @@ bool Ray::reflection(Point p, Vector norm_vec) {
   double idotn2 = (norm_vec.x * cur_vec.x + norm_vec.y * cur_vec.y);
   double x = cur_vec.x;
   double y = cur_vec.y;
+  if (std::abs(idotn2) < EPS) {
+    std::cout << "some error of idotn2:" << idotn2 << std::endl;
+  }
 
   LineSeg l_ray(Point(cur_point.x, cur_point.y),
                 Vector(p.x - cur_point.x, p.y - cur_point.y));
   line_list.push_back(l_ray);
 
-  Vector reflec_vec(x - idotn2 * norm_vec.x * 2.0,
-                    y - idotn2 * norm_vec.y * 2.0);
+  Vector reflec_vec =
+      Vector(x - idotn2 * norm_vec.x * 2.0, y - idotn2 * norm_vec.y * 2.0)
+          .normalize();
+
+  //  if (1.0 - cur_vec.cos(reflec_vec) < EPS) {
+  //    std::cout << "reflec vec:" << reflec_vec.x << "," << reflec_vec.y
+  //              << "cur vec:" << cur_vec.x << "," << cur_vec.y << std::endl;
+  //  }
 
   cur_vec = reflec_vec.normalize();
   cur_point = Point(p.x, p.y);

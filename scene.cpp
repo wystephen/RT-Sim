@@ -42,7 +42,7 @@ bool Scene::drawScene() {
     beacon_pen.setColor(QColor(55, 55, 0));
     painter.setPen(beacon_pen);
 
-    //#pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < beacon_list_.size(); ++i) {
       int xx = beacon_list_[i].x * x_scale_ + x_offset;
       int yy = beacon_list_[i].y * y_scale_ + y_offset;
@@ -55,7 +55,7 @@ bool Scene::drawScene() {
     tra_pen.setWidth(5);
     tra_pen.setColor(QColor(100, 0, 100));
     painter.setPen(tra_pen);
-    //#pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < tra_list_.size() - 1; ++i) {
       Point p1 = toImage(tra_list_[i]);
       Point p2 = toImage(tra_list_[i + 1]);
@@ -67,7 +67,7 @@ bool Scene::drawScene() {
     tra_p_pen.setColor(QColor(0, 100, 200));
     painter.setPen(tra_p_pen);
 
-    //#pragma omp parallel for
+#pragma omp parallel for
     for (int i = 0; i < tra_list_.size(); ++i) {
       Point p = toImage(tra_list_[i]);
       painter.drawPoint(p.x, p.y);
@@ -321,15 +321,6 @@ bool Scene::calRayTracing() {
 #pragma omp parallel for
       for (int i = 0; i < counter + 1; ++i) {
         double theta = -1.0 * M_PI + (step_length * double(i)) / 180.0 * M_PI;
-        //        if (i == counter - 1) {
-        //          std::cout << "max theata in degree:" << theta / M_PI * 180.0
-        //                    << std::endl;
-        //        }
-
-        //        if (i == 0) {
-        //          std::cout << "min theata in degree:" << theta / M_PI * 180.0
-        //                    << std::endl;
-        //        }
 
         Ray ray;
         ray.Initial(beacon_list_[bi],

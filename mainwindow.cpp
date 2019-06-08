@@ -16,7 +16,7 @@ MainWindow::MainWindow(QWidget *parent)
 
   connect(this, SIGNAL(cal_step()), &cur_scene, SLOT(calStep()));
 
-  cur_scene.loadDefult();
+  //  cur_scene.loadDefult();
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -29,9 +29,10 @@ MainWindow::~MainWindow() { delete ui; }
 void MainWindow::draw_image(QImage img) {
   int width = img_label->width();
   int height = img_label->height();
-  img_label->setPixmap(QPixmap::fromImage(img).scaled(
+  QPixmap q_pix = QPixmap::fromImage(img).scaled(
       width, height, Qt::AspectRatioMode::KeepAspectRatio,
-      Qt::TransformationMode::SmoothTransformation));
+      Qt::TransformationMode::SmoothTransformation);
+  img_label->setPixmap(q_pix);
 }
 
 bool MainWindow::initial_draw() {
