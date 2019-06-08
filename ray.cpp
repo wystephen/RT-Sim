@@ -85,10 +85,15 @@ bool Ray::reflection(Point p, Vector norm_vec) {
 }
 
 bool Ray::reachedPoint(Point p, double max_dis) {
+  if (max_dis < 0.0) {
+    std::cout << "some error  max dis::" << max_dis << std::endl;
+  }
   Vector pv_vec = Vector(p.x - cur_point.x, p.y - cur_point.y);
-  double cos_theta = std::acos(pv_vec.cos(cur_vec));
+  double cos_theta = (pv_vec.cos(cur_vec));
   if (sqrt(1.0 - cos_theta * cos_theta) * pv_vec.len() < 0.05 &&
-      pv_vec.len() < max_dis) {
+      pv_vec.len() < max_dis &&
+      cos_theta > 0.8) {  // && std::abs(cos_theta) < M_PI / 4.0) {
+    //    std::cout << "cos theat:" << cos_theta << std::endl;
     line_list.push_back(
         LineSeg(cur_point, Vector(p.x - cur_point.x, p.y - cur_point.y)));
     reached_flag = true;

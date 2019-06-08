@@ -252,26 +252,26 @@ bool Scene::calRayTracing() {
       valid_ray_list_.clear();
     }
 
-    int counter = 1800000;
+    int counter = 180000;
     double step_length = 360.0 / double(counter);
 
     Point target_point = tra_list_[trajectory_index_];
 
-    std::cout << "=====================LINES========================"
-              << std::endl;
-    for (auto l : line_list_) {
-      std::cout << l.start_point.x << "," << l.start_point.y << ","
-                << l.ori_vec.x << "," << l.ori_vec.y << std::endl;
-    }
+    //    std::cout << "=====================LINES========================"
+    //              << std::endl;
+    //    for (auto l : line_list_) {
+    //      std::cout << l.start_point.x << "," << l.start_point.y << ","
+    //                << l.ori_vec.x << "," << l.ori_vec.y << std::endl;
+    //    }
 
-    std::cout << "=====================LINES========================"
-              << std::endl;
+    //    std::cout << "=====================LINES========================"
+    //              << std::endl;
 
     for (int bi = 0; bi < beacon_list_.size(); ++bi) {
       Point beacon_point = beacon_list_[bi];
 
 #pragma omp parallel for
-      for (int i = 0; i < counter * 3; ++i) {
+      for (int i = 0; i < counter + 1; ++i) {
         double ifloat = i;
         double theta = double(i * 360) / double(counter) * M_PI / 180.0 - M_PI;
         Ray ray;
@@ -306,7 +306,7 @@ bool Scene::calRayTracing() {
             }
           } else {
             //            std::cout << "some error happend." << std::endl;
-            break;
+            //            break;
           }
         }
         //        if (i % 1800 == 0) {
