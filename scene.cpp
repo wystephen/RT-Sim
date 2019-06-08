@@ -252,7 +252,7 @@ bool Scene::calRayTracing() {
       valid_ray_list_.clear();
     }
 
-    int counter = 180000;
+    int counter = 18000;
     double step_length = 360.0 / double(counter);
 
     Point target_point = tra_list_[trajectory_index_];
@@ -287,7 +287,10 @@ bool Scene::calRayTracing() {
             Point tmp_p(0, 0);
             auto l = line_list_[vi];
             double dis = ray.detect_intersection(l, tmp_p);
-            if ((dis >= 0.0 && dis < min_dis) || (dis > 0.0 && min_dis < 0.0)) {
+
+            if ((dis >= 0.0 && dis < min_dis) ||
+                (dis >= 0.0 && min_dis < 0.0) ||
+                (dis >= 0.0 && valid_index < 0)) {
               min_dis = dis;
               min_p = Point(tmp_p.x, tmp_p.y);
               min_l = LineSeg(Point(l.start_point.x, l.start_point.y),
@@ -295,7 +298,7 @@ bool Scene::calRayTracing() {
               valid_index = vi;
             }
           }
-          if (valid_index > 0) {
+          if (valid_index >= 0) {
             if (ray.reachedPoint(target_point, min_dis)) {
 #pragma omp critical
               { valid_ray_list_.push_back(ray); }
@@ -305,7 +308,7 @@ bool Scene::calRayTracing() {
               ray.reflection(min_p, min_l.getNormalVector());
             }
           } else {
-            //            std::cout << "some error happend." << std::endl;
+            std::cout << "some error happend." << std::endl;
             //            break;
           }
         }
