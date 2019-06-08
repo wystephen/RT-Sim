@@ -82,6 +82,19 @@ bool Scene::drawScene() {
     }
   }
 
+  if (valid_ray_list_.size() > 0) {
+    //    for (int i = 0; i < valid_ray_list_.size(); ++i) {
+    //      Ray &ray = valid_ray_list_[i];
+
+    //      for (int k = 0; k < ray.line_list.size(); ++k) {
+    //        auto l = ray.line_list[k];
+    //        painter.drawLine(l.start_point.x, l.start_point.y,
+    //                         l.start_point.x + l.ori_vec.x,
+    //                         l.start_point.y + l.ori_vec.y);
+    //      }
+    //    }
+  }
+
   emit newImage(img);
   return true;
 }
@@ -286,5 +299,49 @@ void Scene::prevStep() {
 void Scene::calStep() {
   if (line_list_.size() > 0 && beacon_list_.size() > 0 &&
       tra_list_.size() > trajectory_index_ && trajectory_index_ > 0) {
+    // begein to calculate the whole tracing system
+
+    if (valid_ray_list_.size() > 0) {
+      valid_ray_list_.clear();
+    }
+
+    int counter = 10000;
+    double step_length = 2.0 * M_PI / double(counter);
+
+    for (int bi = 0; bi < beacon_list_.size(); ++bi) {
+      for (int i = 0; i < counter; ++i) {
+        double theta = -1.0 * M_PI + double(i) * step_length;
+        Ray ray;
+        ray.Initial(beacon_list_[bi],
+                    Vector(1.0 * cos(theta), 1.0 * sin(theta)));
+        for (int depth = 0; depth < 5; ++depth) {
+          if (!ray.reached_flag) {
+            double min_dis(1e64);
+            Point min_p(0, 0);
+            LineSeg min_l;
+            for (LineSeg l : line_list_) {
+              Point tmp_p(0, 0);
+              double dis = ray.detect_intersection(l, tmp_p);
+              if ((dis > 0.0 && dis < min_dis)) {
+                min_dis = dis;
+                min_p = Point(tmp_p.x, tmp_p.y);
+                min_l = LineSeg(Point(l.start_point.x, l.start_point.y),
+                                Vector(l.ori_vec.x, l.ori_vec.y));
+              }
+            }
+            if (ray.reachedPoint(min_p, min_dis)) {
+              valid_ray_list_.push_back(ray);
+              std::cout << "add a new ray" << std::endl;
+              std::cout << "ray line trace:" << ray.line_list.size()
+                        << "bi:" << bi << std::endl;
+            } else {
+              ray.reflection(min_p, min_l.getNormalVector());
+            }
+          }
+        }
+      }
+    }
   }
+
+  drawScene();
 }

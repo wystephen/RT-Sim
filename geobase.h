@@ -35,6 +35,17 @@ struct Vector {
     if (length > 0) return {x / length, y / length};
     return {0., 0.};
   }
+
+  double cos(Vector v) {
+    double cross = x * v.x + y * v.y;
+    double n1 = sqrt(x * x + y * y);
+    double n2 = sqrt(v.x * v.x + v.y * v.y);
+    if (std::abs(n1) < EPS || std::abs(n2) < EPS) {
+      return -1.0;
+    } else {
+      return cross / n1 / n2;
+    }
+  }
 };
 
 struct Point {
@@ -44,17 +55,20 @@ struct Point {
   Point operator+(Vector v) { return {x + v.x, y + v.y}; }
   Vector operator-(Point p) { return {x - p.x, y - p.y}; }
   Point operator-(Vector v) { return {x - v.x, y - v.y}; }
-  bool IsValid() { return x >= 0. && x <= 1. && y > 0. && y < 1.; }
+  bool isClose(Point p) { return Vector(p.x - x, p.y - y).len() < EPS; }
 };
 
 struct LineSeg {
   LineSeg(Point sp, Vector sv) : start_point(sp.x, sp.y), ori_vec(sv.x, sv.y) {}
+  LineSeg() : start_point(0, 0), ori_vec(0, 0) {}
   Point start_point;
   Vector ori_vec;
 
   Vector getNormalVector() {
     if (std::fabs(ori_vec.x) > EPS) {
       return Vector(-1.0 * ori_vec.y / ori_vec.x, 1.0);
+    } else {
+      return Vector(1.0, 0.0);
     }
   }
 };

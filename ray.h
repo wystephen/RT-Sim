@@ -8,10 +8,22 @@
 
 #include <functional>
 
-class Ray : public QObject {
-  Q_OBJECT
+#include <iostream>
+
+class Ray {
  public:
-  explicit Ray(QObject *parent = nullptr);
+  explicit Ray() {}
+
+  Ray(const Ray &r)
+      : start_point(r.start_point.x, r.start_point.y),
+        cur_point(r.cur_point.x, r.cur_point.y),
+        cur_vec(r.cur_vec.x, r.cur_vec.y),
+        line_list() {
+    for (LineSeg l : r.line_list) {
+      line_list.push_back(LineSeg(Point(l.start_point.x, l.start_point.y),
+                                  Vector(l.ori_vec.x, l.ori_vec.y)));
+    }
+  }
 
   bool Initial(Point s_p, Vector s_v) {
     start_point = s_p;
@@ -23,6 +35,8 @@ class Ray : public QObject {
   Point start_point = Point(0, 0);
   Point cur_point = Point(0, 0);
   Vector cur_vec = Vector(1, 0);
+
+  bool reached_flag = false;
 
   std::vector<LineSeg> line_list;
 
@@ -38,11 +52,9 @@ class Ray : public QObject {
    * @param p
    * @return
    */
-  bool reflection(const Point &p);
+  bool reflection(Point p, Vector norm_vec);
 
- signals:
-
- public slots:
+  bool reachedPoint(Point p, double max_dis);
 };
 
 #endif  // RAY_H
