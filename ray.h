@@ -6,6 +6,8 @@
 #include <geobase.h>
 #include <vector>
 
+#include <functional>
+
 class Ray : public QObject {
   Q_OBJECT
  public:
@@ -15,6 +17,7 @@ class Ray : public QObject {
     start_point = s_p;
     cur_point = s_p;
     cur_vec = s_v;
+    return true;
   }
 
   Point start_point = Point(0, 0);
@@ -28,8 +31,13 @@ class Ray : public QObject {
    * @param l
    * @return
    */
-  double detect_intersection(LineSeg l);
+  double detect_intersection(const LineSeg &l, Point &intersect_point);
 
+  /**
+   * @brief reflection
+   * @param p
+   * @return
+   */
   bool reflection(const Point &p);
 
  signals:

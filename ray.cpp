@@ -2,6 +2,4 @@
 
 Ray::Ray(QObject *parent) : QObject(parent) {}
 
-double Ray::detect_intersection(LineSeg l) {
-    return -1.0;
-}
+double Ray::detect_intersection(const LineSeg &l, Point &intersect_point) {}
