@@ -140,7 +140,6 @@ bool Scene::loadBeacon(const QString b_str) {
     for (auto p : tmp_beacon_list) {
       beacon_list_.push_back(p);
     }
-
     drawScene();
     return true;
   } else {
@@ -233,7 +232,7 @@ bool Scene::calRayTracing(Point target_point) {
     valid_ray_list_.clear();
   }
 
-  int counter = 18000;
+  int counter = 180000;
   double step_length = 360.0 / double(counter);
 
   for (int bi = 0; bi < beacon_list_.size(); ++bi) {

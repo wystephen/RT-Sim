@@ -194,6 +194,7 @@ class Scene : public QObject {
     if (valid_ray_list_.size() > 0) {
       QPen tracing_pen;
       tracing_pen.setWidth(2);
+      tracing_pen.setColor(QColor(200, 200, 0));
       painter.setPen(tracing_pen);
 
       for (int i = 0; i < valid_ray_list_.size(); ++i) {
