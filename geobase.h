@@ -1,12 +1,16 @@
 #ifndef GEOBASE_H
 #define GEOBASE_H
 
-#include <math.h>
 #include <cmath>
+#include <math.h>
 
 #include <iostream>
 
 #define EPS 1e-8
+
+#ifndef M_PI
+#define M_PI 3.1415926
+#endif
 
 struct Vector {
   Vector(double ix, double iy) : x(ix), y(iy) {}
@@ -15,11 +19,11 @@ struct Vector {
   Vector operator+(Vector v) { return {x + v.x, y + v.y}; }
   Vector operator-(Vector v) { return {x - v.x, y - v.y}; }
   Vector operator-(void) { return {-x, -y}; }
-  double operator*(Vector v)  //µã³Ë
+  double operator*(Vector v) //µã³Ë
   {
     return x * v.x + y * v.y;
   }
-  Vector operator*(double f)  //±¶Êý
+  Vector operator*(double f) //±¶Êý
   {
     return {x * f, y * f};
   }
@@ -78,4 +82,4 @@ struct LineSeg {
   }
 };
 
-#endif  // GEOBASE_H
+#endif // GEOBASE_H
