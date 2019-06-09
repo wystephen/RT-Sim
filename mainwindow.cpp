@@ -86,3 +86,11 @@ void MainWindow::on_btn_newx_step_clicked() {
 }
 
 void MainWindow::on_btn_calculate_step_clicked() { emit cal_step(); }
+
+void MainWindow::on_actionLoad_Trajectory_From_File_triggered() {}
+
+void MainWindow::on_actionSave_Trajectory_To_File_triggered() {}
+
+void MainWindow::on_btn_global_search_clicked() {
+  // searching all result in this scene needn't any trajectory.
+}

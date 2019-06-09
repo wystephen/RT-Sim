@@ -281,6 +281,8 @@ L,0.5,9,0,-0.5,17</string>
     <addaction name="actionSave_Trajectory_To_File"/>
     <addaction name="actionLoad_Scene_Frome_File"/>
     <addaction name="actionSave_Scene_From_File"/>
+    <addaction name="actionLoad_Beacon_From_File"/>
+    <addaction name="actionSave_Scene_to_File"/>
    </widget>
    <widget class="QMenu" name="menuAbout">
     <property name="title">
@@ -335,7 +337,17 @@ L,0.5,9,0,-0.5,17</string>
   </action>
   <action name="actionSave_Scene_From_File">
    <property name="text">
-    <string>Save Scene From File</string>
+    <string>Save Scene to File</string>
+   </property>
+  </action>
+  <action name="actionLoad_Beacon_From_File">
+   <property name="text">
+    <string>Load Beacon From File</string>
+   </property>
+  </action>
+  <action name="actionSave_Scene_to_File">
+   <property name="text">
+    <string>Save Scene to File</string>
    </property>
   </action>
  </widget>

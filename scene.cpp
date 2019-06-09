@@ -312,10 +312,6 @@ bool Scene::calRayTracing() {
             //            break;
           }
         }
-        //        if (i % 1800 == 0) {
-        //#pragma omp critical
-        //          { valid_ray_list_.push_back(ray); }
-        //        }
       }
     }
   }

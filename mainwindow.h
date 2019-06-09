@@ -41,6 +41,9 @@ class MainWindow : public QMainWindow {
   void on_btn_pre_step_clicked();
   void on_btn_newx_step_clicked();
   void on_btn_calculate_step_clicked();
+  void on_actionLoad_Trajectory_From_File_triggered();
+  void on_actionSave_Trajectory_To_File_triggered();
+  void on_btn_global_search_clicked();
 };
 
 #endif  // MAINWINDOW_H
