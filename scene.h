@@ -111,7 +111,7 @@ class Scene : public QObject {
   double x_offset = 0;
   double y_offset = 0;
 
-  bool calRayTracing();
+  bool calRayTracing(Point target_point);
 
   bool drawEnvironment(QPainter &painter) {
     if (line_list_.size() > 0) {
@@ -188,6 +188,32 @@ class Scene : public QObject {
       }
     }
     return true;
+  }
+
+  bool drawRay(QPainter &painter) {
+    if (valid_ray_list_.size() > 0) {
+      QPen tracing_pen;
+      tracing_pen.setWidth(2);
+      painter.setPen(tracing_pen);
+
+      for (int i = 0; i < valid_ray_list_.size(); ++i) {
+        Ray &ray = valid_ray_list_[i];
+
+        for (int k = 0; k < ray.line_list.size(); ++k) {
+          auto l = ray.line_list[k];
+          Point sp = toImage(l.start_point);
+          Point ep = toImage(Point(l.start_point.x + l.ori_vec.x,
+                                   l.start_point.y + l.ori_vec.y));
+          painter.drawLine(sp.x, sp.y, ep.x, ep.y);
+          painter.drawLine(ep.x - 10, ep.y - 10, ep.x + 10, ep.y + 10);
+          painter.drawLine(ep.x - 10, ep.y + 10, ep.x + 10, ep.y - 10);
+        }
+      }
+
+      return true;
+    } else {
+      return false;
+    }
   }
 
  signals:
