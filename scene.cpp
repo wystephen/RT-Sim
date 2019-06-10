@@ -22,6 +22,123 @@ bool Scene::drawScene() {
   return true;
 }
 
+bool Scene::drawEnvironment(QPainter &painter) {
+  if (line_list_.size() > 0) {
+    //    painter.setPen(QColor(255, 0, 0));
+    QPen line_pen;
+    line_pen.setColor(QColor(255, 0, 0));
+    line_pen.setWidth(10);
+    painter.setPen(line_pen);
+
+    //#pragma omp parallel for
+    for (int i = 0; i < line_list_.size(); ++i) {
+      int x1 = line_list_[i].start_point.x * x_scale_ + x_offset;
+      int y1 = line_list_[i].start_point.y * y_scale_ + y_offset;
+      int x2 =
+          (line_list_[i].start_point.x + line_list_[i].ori_vec.x) * x_scale_ +
+          x_offset;
+      int y2 =
+          (line_list_[i].start_point.y + line_list_[i].ori_vec.y) * y_scale_ +
+          y_offset;
+      painter.drawLine(x1, y1, x2, y2);
+    }
+  }
+  return true;
+}
+
+bool Scene::drawBeacons(QPainter &painter) {
+  if (beacon_list_.size() > 0) {
+    //    painter.setPen(QColor(55, 55, 0));
+    QPen beacon_pen;
+    beacon_pen.setWidth(20);
+    beacon_pen.setColor(QColor(55, 55, 0));
+    painter.setPen(beacon_pen);
+
+    //#pragma omp parallel for
+    for (int i = 0; i < beacon_list_.size(); ++i) {
+      int xx = beacon_list_[i].x * x_scale_ + x_offset;
+      int yy = beacon_list_[i].y * y_scale_ + y_offset;
+      painter.drawPoint(xx, yy);
+    }
+  }
+  return true;
+}
+
+bool Scene::drawTrajectory(QPainter &painter) {
+  if (tra_list_.size() > 0) {
+    QPen tra_pen;
+    tra_pen.setWidth(5);
+    tra_pen.setColor(QColor(100, 0, 100));
+    painter.setPen(tra_pen);
+    //#pragma omp parallel for
+    for (int i = 0; i < tra_list_.size() - 1; ++i) {
+      Point p1 = toImage(tra_list_[i]);
+      Point p2 = toImage(tra_list_[i + 1]);
+      painter.drawLine(p1.x, p1.y, p2.x, p2.y);
+    }
+
+    QPen tra_p_pen;
+    tra_p_pen.setWidth(20);
+    tra_p_pen.setColor(QColor(0, 100, 200));
+    painter.setPen(tra_p_pen);
+
+    //#pragma omp parallel for
+    for (int i = 0; i < tra_list_.size(); ++i) {
+      Point p = toImage(tra_list_[i]);
+      painter.drawPoint(p.x, p.y);
+    }
+
+    if (trajectory_index_ >= 0 && trajectory_index_ < tra_list_.size()) {
+      tra_p_pen.setColor(QColor(0, 10, 250));
+      tra_p_pen.setWidth(30);
+      painter.setPen(tra_p_pen);
+      Point p = toImage(tra_list_[trajectory_index_]);
+      painter.drawPoint(p.x, p.y);
+    }
+  }
+  return true;
+}
+
+bool Scene::drawRay(QPainter &painter) {
+  if (valid_ray_list_.size() > 0) {
+    QPen tracing_pen;
+    tracing_pen.setWidth(2);
+    tracing_pen.setColor(QColor(200, 200, 0));
+    painter.setPen(tracing_pen);
+
+    double base_color_step = 250.0 / double(beacon_list_.size() + 1);
+
+    auto generate_qcolor = [&base_color_step](int i) -> QColor {
+      //      std::cout << int(base_color_step * double(i + 1)) << ","
+      //                << 255 - int(base_color_step * double(i + 1)) << "," <<
+      //                10
+      //                << std::endl;
+      return QColor(int(base_color_step * double(i + 1)),
+                    255 - int(base_color_step * double(i + 1)),
+                    100 + int(base_color_step / 2.0 * double(i)));
+    };
+
+    for (int i = 0; i < valid_ray_list_.size(); ++i) {
+      Ray &ray = valid_ray_list_[i];
+      tracing_pen.setColor(generate_qcolor(ray.beacon_id()));
+      painter.setPen(tracing_pen);
+
+      for (int k = 0; k < ray.line_list.size(); ++k) {
+        auto l = ray.line_list[k];
+        Point sp = toImage(l.start_point);
+        Point ep = toImage(Point(l.start_point.x + l.ori_vec.x,
+                                 l.start_point.y + l.ori_vec.y));
+        painter.drawLine(sp.x, sp.y, ep.x, ep.y);
+        painter.drawLine(ep.x - 10, ep.y - 10, ep.x + 10, ep.y + 10);
+        painter.drawLine(ep.x - 10, ep.y + 10, ep.x + 10, ep.y - 10);
+      }
+    }
+    return true;
+  } else {
+    return false;
+  }
+}
+
 bool Scene::initalAxis() {
   if (line_list_.size() > 0) {
     // search contain box of all line segments.
@@ -243,6 +360,7 @@ bool Scene::calRayTracing(Point target_point) {
       double ifloat = i;
       double theta = double(i * 360) / double(counter) * M_PI / 180.0 - M_PI;
       Ray ray;
+      ray.setBeacon_id(bi);
       ray.Initial(beacon_point,
                   Vector(1.0 * std::cos(theta), 1.0 * std::sin(theta)));
 
@@ -277,14 +395,9 @@ bool Scene::calRayTracing(Point target_point) {
           }
         } else {
           std::cout << "some error happend." << std::endl;
-          //            break;
+          break;
         }
       }
     }
   }
-  //  }
-
-  //  drawScene();
-  //  testRayIntersection();
-  //  testRayIntersectionY();
 }

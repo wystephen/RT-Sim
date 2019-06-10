@@ -113,109 +113,30 @@ class Scene : public QObject {
 
   bool calRayTracing(Point target_point);
 
-  bool drawEnvironment(QPainter &painter) {
-    if (line_list_.size() > 0) {
-      //    painter.setPen(QColor(255, 0, 0));
-      QPen line_pen;
-      line_pen.setColor(QColor(255, 0, 0));
-      line_pen.setWidth(10);
-      painter.setPen(line_pen);
+  /**
+   * @brief drawEnvironment
+   *
+   * @param painter
+   * @return
+   */
+  bool drawEnvironment(QPainter &painter);
 
-      //#pragma omp parallel for
-      for (int i = 0; i < line_list_.size(); ++i) {
-        int x1 = line_list_[i].start_point.x * x_scale_ + x_offset;
-        int y1 = line_list_[i].start_point.y * y_scale_ + y_offset;
-        int x2 =
-            (line_list_[i].start_point.x + line_list_[i].ori_vec.x) * x_scale_ +
-            x_offset;
-        int y2 =
-            (line_list_[i].start_point.y + line_list_[i].ori_vec.y) * y_scale_ +
-            y_offset;
-        painter.drawLine(x1, y1, x2, y2);
-      }
-    }
-    return true;
-  }
+  /**
+   * @brief drawBeacons
+   * @param painter
+   * Draw current Beacons.
+   * @return
+   */
+  bool drawBeacons(QPainter &painter);
 
-  bool drawBeacons(QPainter &painter) {
-    if (beacon_list_.size() > 0) {
-      //    painter.setPen(QColor(55, 55, 0));
-      QPen beacon_pen;
-      beacon_pen.setWidth(20);
-      beacon_pen.setColor(QColor(55, 55, 0));
-      painter.setPen(beacon_pen);
+  bool drawTrajectory(QPainter &painter);
 
-      //#pragma omp parallel for
-      for (int i = 0; i < beacon_list_.size(); ++i) {
-        int xx = beacon_list_[i].x * x_scale_ + x_offset;
-        int yy = beacon_list_[i].y * y_scale_ + y_offset;
-        painter.drawPoint(xx, yy);
-      }
-    }
-    return true;
-  }
-
-  bool drawTrajectory(QPainter &painter) {
-    if (tra_list_.size() > 0) {
-      QPen tra_pen;
-      tra_pen.setWidth(5);
-      tra_pen.setColor(QColor(100, 0, 100));
-      painter.setPen(tra_pen);
-      //#pragma omp parallel for
-      for (int i = 0; i < tra_list_.size() - 1; ++i) {
-        Point p1 = toImage(tra_list_[i]);
-        Point p2 = toImage(tra_list_[i + 1]);
-        painter.drawLine(p1.x, p1.y, p2.x, p2.y);
-      }
-
-      QPen tra_p_pen;
-      tra_p_pen.setWidth(20);
-      tra_p_pen.setColor(QColor(0, 100, 200));
-      painter.setPen(tra_p_pen);
-
-      //#pragma omp parallel for
-      for (int i = 0; i < tra_list_.size(); ++i) {
-        Point p = toImage(tra_list_[i]);
-        painter.drawPoint(p.x, p.y);
-      }
-
-      if (trajectory_index_ >= 0 && trajectory_index_ < tra_list_.size()) {
-        tra_p_pen.setColor(QColor(0, 10, 250));
-        tra_p_pen.setWidth(30);
-        painter.setPen(tra_p_pen);
-        Point p = toImage(tra_list_[trajectory_index_]);
-        painter.drawPoint(p.x, p.y);
-      }
-    }
-    return true;
-  }
-
-  bool drawRay(QPainter &painter) {
-    if (valid_ray_list_.size() > 0) {
-      QPen tracing_pen;
-      tracing_pen.setWidth(2);
-      tracing_pen.setColor(QColor(200, 200, 0));
-      painter.setPen(tracing_pen);
-
-      for (int i = 0; i < valid_ray_list_.size(); ++i) {
-        Ray &ray = valid_ray_list_[i];
-
-        for (int k = 0; k < ray.line_list.size(); ++k) {
-          auto l = ray.line_list[k];
-          Point sp = toImage(l.start_point);
-          Point ep = toImage(Point(l.start_point.x + l.ori_vec.x,
-                                   l.start_point.y + l.ori_vec.y));
-          painter.drawLine(sp.x, sp.y, ep.x, ep.y);
-          painter.drawLine(ep.x - 10, ep.y - 10, ep.x + 10, ep.y + 10);
-          painter.drawLine(ep.x - 10, ep.y + 10, ep.x + 10, ep.y - 10);
-        }
-      }
-
-      return true;
-    } else {
-      return false;
-    }
-  }
+  /**
+   * @brief drawRay
+   * @param painter
+   * @return
+   */
+  bool drawRay(QPainter &painter);
 
  signals:
   void newImage(QImage img);
