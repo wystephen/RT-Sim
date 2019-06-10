@@ -48,13 +48,11 @@ bool Scene::drawEnvironment(QPainter &painter) {
 
 bool Scene::drawBeacons(QPainter &painter) {
   if (beacon_list_.size() > 0) {
-    //    painter.setPen(QColor(55, 55, 0));
     QPen beacon_pen;
     beacon_pen.setWidth(20);
     beacon_pen.setColor(QColor(55, 55, 0));
     painter.setPen(beacon_pen);
 
-    //#pragma omp parallel for
     for (int i = 0; i < beacon_list_.size(); ++i) {
       int xx = beacon_list_[i].x * x_scale_ + x_offset;
       int yy = beacon_list_[i].y * y_scale_ + y_offset;
@@ -70,7 +68,6 @@ bool Scene::drawTrajectory(QPainter &painter) {
     tra_pen.setWidth(5);
     tra_pen.setColor(QColor(100, 0, 100));
     painter.setPen(tra_pen);
-    //#pragma omp parallel for
     for (int i = 0; i < tra_list_.size() - 1; ++i) {
       Point p1 = toImage(tra_list_[i]);
       Point p2 = toImage(tra_list_[i + 1]);
@@ -82,7 +79,6 @@ bool Scene::drawTrajectory(QPainter &painter) {
     tra_p_pen.setColor(QColor(0, 100, 200));
     painter.setPen(tra_p_pen);
 
-    //#pragma omp parallel for
     for (int i = 0; i < tra_list_.size(); ++i) {
       Point p = toImage(tra_list_[i]);
       painter.drawPoint(p.x, p.y);
@@ -348,6 +344,8 @@ bool Scene::calRayTracing(Point target_point) {
   if (valid_ray_list_.size() > 0) {
     valid_ray_list_.clear();
   }
+  // TODO : achieve multi-layer ray tracing.(aim to higher precession or higher
+  // detecting)
 
   int counter = 180000;
   double step_length = 360.0 / double(counter);

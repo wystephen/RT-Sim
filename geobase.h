@@ -1,8 +1,8 @@
 #ifndef GEOBASE_H
 #define GEOBASE_H
 
-#include <cmath>
 #include <math.h>
+#include <cmath>
 
 #include <iostream>
 
@@ -19,22 +19,22 @@ struct Vector {
   Vector operator+(Vector v) { return {x + v.x, y + v.y}; }
   Vector operator-(Vector v) { return {x - v.x, y - v.y}; }
   Vector operator-(void) { return {-x, -y}; }
-  double operator*(Vector v) //µã³Ë
+  double operator*(Vector v)  //µã³Ë
   {
     return x * v.x + y * v.y;
   }
-  Vector operator*(double f) //±¶Êý
+  Vector operator*(double f)  //±¶Êý
   {
     return {x * f, y * f};
   }
   Vector operator/(double f) { return {x / f, y / f}; }
   // length of the vector.
-  double len() { return sqrt(x * x + y * y); }
+  double len() const { return sqrt(x * x + y * y); }
   Vector reflect(const Vector normal) {
     double idotn2 = (normal.x * x + normal.y * y) * -2.;
     return {x + idotn2 * normal.x, y + idotn2 * normal.y};
   }
-  Vector normalize() {
+  Vector normalize() const {
     double length = len();
     if (length > EPS) {
       return {x / length, y / length};
@@ -82,4 +82,4 @@ struct LineSeg {
   }
 };
 
-#endif // GEOBASE_H
+#endif  // GEOBASE_H
