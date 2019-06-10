@@ -122,7 +122,7 @@ bool Ray::reachedPoint(Point p, double max_dis) {
 bool Ray::updateRay(const Point &new_p, const Vector &new_ori) {
   double distance = std::sqrt(std::pow(new_p.x - cur_point.x, 2.0) +
                               std::pow(new_p.y - cur_point.y, 2.0));
-  assert(std::isfinite(distance));
+  assert(std::isfinite(distance) && "distance calculation with some problem");
   total_distance_ += distance;
 
   line_list.push_back(
