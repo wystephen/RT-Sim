@@ -1,6 +1,6 @@
 #include "mainwindow.h"
-#include <iostream>
 #include "ui_mainwindow.h"
+#include <iostream>
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
@@ -16,7 +16,13 @@ MainWindow::MainWindow(QWidget *parent)
 
   connect(this, SIGNAL(cal_step()), &cur_scene, SLOT(calStep()));
 
-  //  cur_scene.loadDefult();
+  connect(this, SIGNAL(cal_whole_tra()), &cur_scene,
+          SLOT(calWholeTrajectory()));
+
+  // Load information saved in elements.
+  on_btn_refresh_scene_clicked();
+  on_btn_refresh_beacon_clicked();
+  on_btn_refresh_trajectory_clicked();
 }
 
 MainWindow::~MainWindow() { delete ui; }
@@ -94,3 +100,5 @@ void MainWindow::on_actionSave_Trajectory_To_File_triggered() {}
 void MainWindow::on_btn_global_search_clicked() {
   // searching all result in this scene needn't any trajectory.
 }
+
+void MainWindow::on_btn_cal_whole_tra_clicked() { emit cal_whole_tra(); }

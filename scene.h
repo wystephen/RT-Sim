@@ -9,24 +9,26 @@
 #include <geobase.h>
 #include <ray.h>
 
-#include <omp.h>
 #include <iostream>
+#include <omp.h>
 
 class Scene : public QObject {
   Q_OBJECT
- public:
+public:
   explicit Scene(QObject *parent = nullptr);
 
-  std::vector<LineSeg> line_list_;  // scene
+  std::vector<LineSeg> line_list_; // scene
 
-  std::vector<Point> beacon_list_;  // valid beacons
+  std::vector<Point> beacon_list_; // valid beacons
 
-  std::vector<Point> tra_list_;  // valid trajectory
+  std::vector<Point> tra_list_; // valid trajectory
   int trajectory_index_ = -1;
 
   std::vector<Ray> valid_ray_list_;
   double angle_resolution_ = 0.1 / 180.0 * M_PI;
   double reach_threshold_ = 0.1;
+
+  int sample_split_counter = 18000;
 
   /**
    * @brief loadDefult
@@ -138,10 +140,10 @@ class Scene : public QObject {
    */
   bool drawRay(QPainter &painter);
 
- signals:
+signals:
   void newImage(QImage img);
 
- public slots:
+public slots:
 
   /**
    * @brief next_step
@@ -158,6 +160,12 @@ class Scene : public QObject {
    * calculate ray tracing to current point.
    */
   void calStep();
+
+  /**
+   * @brief calWholeTrajectory
+   * calculate whole trajectory.
+   */
+  void calWholeTrajectory();
 };
 
 inline void testRayIntersection() {
@@ -184,4 +192,4 @@ inline void testRayIntersectionY() {
               << "ip:" << ip.x << "," << ip.y << std::endl;
   }
 }
-#endif  // SCENE_H
+#endif // SCENE_H

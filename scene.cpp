@@ -347,7 +347,7 @@ bool Scene::calRayTracing(Point target_point) {
   // TODO : achieve multi-layer ray tracing.(aim to higher precession or higher
   // detecting)
 
-  int counter = 180000;
+  int counter = sample_split_counter;
   double step_length = 360.0 / double(counter);
 
   for (int bi = 0; bi < beacon_list_.size(); ++bi) {
@@ -399,3 +399,5 @@ bool Scene::calRayTracing(Point target_point) {
     }
   }
 }
+
+void Scene::calWholeTrajectory() {}
