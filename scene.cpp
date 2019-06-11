@@ -18,6 +18,7 @@ bool Scene::drawScene() {
 
   drawRay(painter);
 
+  //  std::cout << "emit new Image " << std::endl;
   emit newImage(img);
   return true;
 }
@@ -400,4 +401,38 @@ bool Scene::calRayTracing(Point target_point) {
   }
 }
 
-void Scene::calWholeTrajectory() {}
+void Scene::calWholeTrajectory() {
+  running_flag = true;
+
+  std::thread f([&]() {
+    if (trajectory_index_ > tra_list_.size() - 1 || trajectory_index_ < 0) {
+      trajectory_index_ = 0;
+    }
+    int before_index = int(trajectory_index_);
+
+    while (running_flag) {
+      //    std::cout << "target index;" << trajectory_index_ << std::endl;
+      Point target_point = tra_list_[trajectory_index_];
+
+      calRayTracing(target_point);
+      drawScene();
+
+      // TODO: save to file
+      trajectory_index_ += 1;
+      if (trajectory_index_ >= tra_list_.size()) {
+        trajectory_index_ = 0;
+      }
+      if (trajectory_index_ < 0) {
+        trajectory_index_ = tra_list_.size() - 1;
+      }
+      if (trajectory_index_ == before_index) {
+        //      std::cout << "trajecotry index:" << trajectory_index_
+        //                << "running index:" << before_index << std::endl;
+        running_flag = false;
+      }
+    }
+  });
+  f.detach();
+}
+
+void Scene::saveRay(QString file_str) { return; }

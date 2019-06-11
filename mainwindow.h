@@ -13,28 +13,29 @@ class MainWindow;
 class MainWindow : public QMainWindow {
   Q_OBJECT
 
-public:
+ public:
   explicit MainWindow(QWidget *parent = nullptr);
   ~MainWindow();
 
   Scene cur_scene;
 
-private:
+ private:
   Ui::MainWindow *ui;
 
   QLabel *img_label = nullptr;
 
   bool initial_draw();
 
-signals:
+ signals:
   void next_step();
   void prev_step();
   void cal_step();
   void cal_whole_tra();
+  void stop_cal();
 
-public slots:
+ public slots:
   void draw_image(QImage img);
-private slots:
+ private slots:
   void on_actionRefresh_Scene_triggered();
   void on_btn_refresh_beacon_clicked();
   void on_btn_refresh_scene_clicked();
@@ -46,6 +47,7 @@ private slots:
   void on_actionSave_Trajectory_To_File_triggered();
   void on_btn_global_search_clicked();
   void on_btn_cal_whole_tra_clicked();
+  void on_btn_stop_sim_clicked();
 };
 
-#endif // MAINWINDOW_H
+#endif  // MAINWINDOW_H

@@ -9,26 +9,38 @@
 #include <geobase.h>
 #include <ray.h>
 
-#include <iostream>
 #include <omp.h>
+#include <iostream>
+#include <mutex>
+#include <thread>
 
 class Scene : public QObject {
   Q_OBJECT
-public:
+ public:
   explicit Scene(QObject *parent = nullptr);
 
-  std::vector<LineSeg> line_list_; // scene
+  // transform(from scene frame to image frame) parameters
+  double img_height_ = 1000;
+  double img_width_ = 1000;
+  double x_scale_ = 100.0;
+  double y_scale_ = 100.0;
+  double x_offset = 0;
+  double y_offset = 0;
 
-  std::vector<Point> beacon_list_; // valid beacons
+  std::vector<LineSeg> line_list_;  // scene
 
-  std::vector<Point> tra_list_; // valid trajectory
+  std::vector<Point> beacon_list_;  // valid beacons
+
+  std::vector<Point> tra_list_;  // valid trajectory
   int trajectory_index_ = -1;
 
   std::vector<Ray> valid_ray_list_;
   double angle_resolution_ = 0.1 / 180.0 * M_PI;
   double reach_threshold_ = 0.1;
 
-  int sample_split_counter = 18000;
+  int sample_split_counter = 180000;
+
+  bool running_flag = false;
 
   /**
    * @brief loadDefult
@@ -105,14 +117,6 @@ public:
    */
   Point toImage(const Point &v);
 
-  // transform parameters
-  double img_height_ = 1000;
-  double img_width_ = 1000;
-  double x_scale_ = 100.0;
-  double y_scale_ = 100.0;
-  double x_offset = 0;
-  double y_offset = 0;
-
   bool calRayTracing(Point target_point);
 
   /**
@@ -140,10 +144,10 @@ public:
    */
   bool drawRay(QPainter &painter);
 
-signals:
+ signals:
   void newImage(QImage img);
 
-public slots:
+ public slots:
 
   /**
    * @brief next_step
@@ -166,6 +170,13 @@ public slots:
    * calculate whole trajectory.
    */
   void calWholeTrajectory();
+
+  void stopContinueCal() {
+    running_flag = false;
+    //    std::cout << "set running flag:" << running_flag << std::endl;
+  }
+
+  void saveRay(QString file_name);
 };
 
 inline void testRayIntersection() {
@@ -192,4 +203,4 @@ inline void testRayIntersectionY() {
               << "ip:" << ip.x << "," << ip.y << std::endl;
   }
 }
-#endif // SCENE_H
+#endif  // SCENE_H

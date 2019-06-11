@@ -1,6 +1,6 @@
 #include "mainwindow.h"
-#include "ui_mainwindow.h"
 #include <iostream>
+#include "ui_mainwindow.h"
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent), ui(new Ui::MainWindow) {
   ui->setupUi(this);
@@ -18,6 +18,8 @@ MainWindow::MainWindow(QWidget *parent)
 
   connect(this, SIGNAL(cal_whole_tra()), &cur_scene,
           SLOT(calWholeTrajectory()));
+
+  connect(this, SIGNAL(stop_cal()), &cur_scene, SLOT(stopContinueCal()));
 
   // Load information saved in elements.
   on_btn_refresh_scene_clicked();
@@ -102,3 +104,5 @@ void MainWindow::on_btn_global_search_clicked() {
 }
 
 void MainWindow::on_btn_cal_whole_tra_clicked() { emit cal_whole_tra(); }
+
+void MainWindow::on_btn_stop_sim_clicked() { emit stop_cal(); }
