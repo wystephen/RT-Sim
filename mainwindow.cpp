@@ -21,6 +21,9 @@ MainWindow::MainWindow(QWidget *parent)
 
   connect(this, SIGNAL(stop_cal()), &cur_scene, SLOT(stopContinueCal()));
 
+  connect(this, SIGNAL(cal_whole_scene()), &cur_scene,
+          SLOT(calWholeTrajectory()));
+
   // Load information saved in elements.
   on_btn_refresh_scene_clicked();
   on_btn_refresh_beacon_clicked();
@@ -101,6 +104,7 @@ void MainWindow::on_actionSave_Trajectory_To_File_triggered() {}
 
 void MainWindow::on_btn_global_search_clicked() {
   // searching all result in this scene needn't any trajectory.
+  emit cal_whole_scene();
 }
 
 void MainWindow::on_btn_cal_whole_tra_clicked() { emit cal_whole_tra(); }

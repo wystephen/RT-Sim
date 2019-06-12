@@ -22,6 +22,9 @@ class Scene : public QObject {
   // transform(from scene frame to image frame) parameters
   double img_height_ = 1000;
   double img_width_ = 1000;
+
+  double x_min_, y_min_, x_max_, y_max_;
+
   double x_scale_ = 100.0;
   double y_scale_ = 100.0;
   double x_offset = 0;
@@ -39,6 +42,7 @@ class Scene : public QObject {
   double reach_threshold_ = 0.1;
 
   int sample_split_counter = 180000;
+  double sample_point_resolution = 0.01;  //[m]
 
   bool running_flag = false;
 
@@ -103,6 +107,8 @@ class Scene : public QObject {
    * @return
    */
   bool initalAxis();
+
+  bool calBound();
 
   /**
    * @brief toImage
@@ -170,6 +176,8 @@ class Scene : public QObject {
    * calculate whole trajectory.
    */
   void calWholeTrajectory();
+
+  void calWholeScene();
 
   void stopContinueCal() {
     running_flag = false;

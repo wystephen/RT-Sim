@@ -9,6 +9,8 @@
 #include <assert.h>
 #include <iostream>
 
+#include <string>
+
 class Ray {
  public:
   Ray() {}
@@ -74,6 +76,19 @@ class Ray {
    * @return
    */
   bool updateRay(const Point &new_p, const Vector &new_ori);
+
+  /**
+   * @brief toString
+   * @return
+   */
+  std::string toString();
+
+  /**
+   * @brief fromString
+   * @param s
+   * @return
+   */
+  bool fromString(const std::string &s);
 
   int beacon_id() const;
   void setBeacon_id(int beacon_id);

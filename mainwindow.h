@@ -31,6 +31,7 @@ class MainWindow : public QMainWindow {
   void prev_step();
   void cal_step();
   void cal_whole_tra();
+  void cal_whole_scene();
   void stop_cal();
 
  public slots:

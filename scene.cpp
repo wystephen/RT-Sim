@@ -436,3 +436,44 @@ void Scene::calWholeTrajectory() {
 }
 
 void Scene::saveRay(QString file_str) { return; }
+
+void Scene::calWholeScene() {
+  running_flag = true;
+  std::thread f([&]() {
+
+  });
+}
+
+bool Scene::calBound() {
+  double x_min(NAN), y_min(NAN), x_max(NAN), y_max(NAN);
+  for (int i = 0; i < line_list_.size(); ++i) {
+    double x1 = (line_list_[i].start_point.x);
+    double y1 = (line_list_[i].start_point.y);
+    double x2 = (x1 + line_list_[i].ori_vec.x);
+    double y2 = (y1 + line_list_[i].ori_vec.y);
+    if (std::min(x1, x2) < x_min || std::isnan(x_min)) {
+      x_min = std::min(x1, x2);
+    }
+    if (std::max(x1, x2) > x_max || std::isnan(x_max)) {
+      x_max = std::max(x1, x2);
+    }
+    if (std::min(y1, y2) < y_min || std::isnan(y_min)) {
+      y_min = std::min(y1, y2);
+    }
+    if (std::max(y1, y2) > y_max || std::isnan(y_max)) {
+      y_max = std::max(y1, y2);
+    }
+  }
+  if (std::isfinite(x_min) && std::isfinite(x_min) && std::isfinite(y_min) &&
+      std::isfinite(y_max)) {
+    x_min_ = x_min;
+    x_max_ = x_max;
+    y_min_ = y_min;
+    y_max_ = y_max;
+
+    return true;
+
+  } else {
+    return false;
+  }
+}
