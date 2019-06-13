@@ -437,19 +437,24 @@ void Scene::calWholeScene() {
   //  std::cout << "start cal whole scene" << std::endl;
   calBound();
 
-  std::string time_prefix =
-      QDateTime::currentDateTimeUtc().toString().toStdString();
-
-  std::ofstream of;
-  std::cout << "file name:" << saving_dir + time_prefix + "sim_data.txt"
-            << std::endl;
-  of.open(saving_dir + time_prefix + "sim_data.txt");
-
   std::thread f([&]() {
+    std::string time_prefix =
+        QDateTime::currentDateTimeUtc().toString().toStdString();
+
+    if (saving_dir[saving_dir.size() - 1] != '/') {
+      saving_dir += '/';
+    }
+
+    std::ofstream of;
+    std::cout << "file name:" << saving_dir + time_prefix + "sim_data.txt"
+              << std::endl;
+    of.open(saving_dir + time_prefix + "sim_data.txt");
+
     for (double x_p = (x_min_); x_p < x_max_; x_p += sample_point_resolution) {
       for (double y_p = (y_min_); y_p < y_max_;
            y_p += sample_point_resolution) {
         if (!running_flag) {
+          of.close();
           return;
         }
         Point target_point(x_p, y_p);
