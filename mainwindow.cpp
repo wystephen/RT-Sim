@@ -21,8 +21,7 @@ MainWindow::MainWindow(QWidget *parent)
 
   connect(this, SIGNAL(stop_cal()), &cur_scene, SLOT(stopContinueCal()));
 
-  connect(this, SIGNAL(cal_whole_scene()), &cur_scene,
-          SLOT(calWholeTrajectory()));
+  connect(this, SIGNAL(cal_whole_scene()), &cur_scene, SLOT(calWholeScene()));
 
   // Load information saved in elements.
   on_btn_refresh_scene_clicked();
@@ -104,6 +103,11 @@ void MainWindow::on_actionSave_Trajectory_To_File_triggered() {}
 
 void MainWindow::on_btn_global_search_clicked() {
   // searching all result in this scene needn't any trajectory.
+  QString dir = QFileDialog::getExistingDirectory(
+      this, tr("Open Directory"), "~/",
+      QFileDialog::DontResolveSymlinks | QFileDialog::ShowDirsOnly);
+  cur_scene.saving_dir = dir.toStdString();
+
   emit cal_whole_scene();
 }
 

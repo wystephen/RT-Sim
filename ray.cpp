@@ -135,3 +135,26 @@ bool Ray::updateRay(const Point &new_p, const Vector &new_ori) {
   //  cur_vec = new_ori.normalize();
   return true;
 }
+
+std::string Ray::toString() {
+  std::string final_str;
+  final_str += "{\"type\":\"Ray\"";
+  final_str += ",\"start_point\":";
+  final_str += start_point.toString();
+  final_str += ",\"start_vec\":";
+  final_str += start_vec.toString();
+  final_str += ",\"dis\":";
+  final_str += std::to_string(total_distance_);
+  final_str += ",\"Lines\":[";
+  for (int i = 0; i < line_list.size(); ++i) {
+    final_str += line_list[i].toString();
+    if (i < line_list.size() - 1) {
+      final_str += ",";
+
+    } else {
+      final_str += "]";
+    }
+  }
+  final_str += "}";
+  return final_str;
+}

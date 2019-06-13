@@ -55,6 +55,10 @@ struct Vector {
       return cross / n1 / n2;
     }
   }
+  std::string toString() {
+    return std::string("{\"type\":\"Vector\",\"x\":" + std::to_string(x) +
+                       ",\"y\":" + std::to_string(y) + "}");
+  }
 };
 
 struct Point {
@@ -65,6 +69,11 @@ struct Point {
   Vector operator-(Point p) { return {x - p.x, y - p.y}; }
   Point operator-(Vector v) { return {x - v.x, y - v.y}; }
   bool isClose(Point p) { return Vector(p.x - x, p.y - y).len() < EPS; }
+
+  std::string toString() {
+    return std::string("{\"type\":\"Point\",\"x\":" + std::to_string(x) +
+                       ",\"y\":" + std::to_string(y) + "}");
+  }
 };
 
 struct LineSeg {
@@ -79,6 +88,12 @@ struct LineSeg {
     } else {
       return Vector(1.0, 0.0);
     }
+  }
+
+  std::string toString() {
+    return std::string(
+        "{\"type\":\"LineSeg\",\"start_point\":" + start_point.toString() +
+        ",\"ori_vec\":" + ori_vec.toString() + "}");
   }
 };
 

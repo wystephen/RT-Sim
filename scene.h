@@ -3,6 +3,7 @@
 
 #include <QObject>
 
+#include <QDateTime>
 #include <QImage>
 #include <QPainter>
 
@@ -10,8 +11,10 @@
 #include <ray.h>
 
 #include <omp.h>
+#include <fstream>
 #include <iostream>
 #include <mutex>
+#include <string>
 #include <thread>
 
 class Scene : public QObject {
@@ -45,6 +48,8 @@ class Scene : public QObject {
   double sample_point_resolution = 0.01;  //[m]
 
   bool running_flag = false;
+
+  std::string saving_dir = "";
 
   /**
    * @brief loadDefult
@@ -184,7 +189,11 @@ class Scene : public QObject {
     //    std::cout << "set running flag:" << running_flag << std::endl;
   }
 
-  void saveRay(QString file_name);
+  std::string toString(Point tp);
+
+  std::string RaytoString();
+
+  std::string EnvtoString();
 };
 
 inline void testRayIntersection() {

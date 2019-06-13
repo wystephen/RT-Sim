@@ -5,6 +5,9 @@
 
 #include <QLabel>
 
+#include <QFile>
+#include <QFileDialog>
+
 #include <scene.h>
 namespace Ui {
 class MainWindow;

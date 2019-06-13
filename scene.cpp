@@ -166,12 +166,9 @@ bool Scene::initalAxis() {
     // calculate transformation
     x_scale_ = double(img_width_) * 0.9 / (x_max - x_min);
     y_scale_ = double(img_height_) * 0.9 / (y_max - y_min);
-    //    std::cout << "x scale,y_scale:" << x_scale << "," << y_scale <<
-    //    std::endl;
+
     x_offset = (-1.0 * x_min) * x_scale_ + 0.05 * img_width_;
     y_offset = (-1.0 * y_min) * y_scale_ + 0.05 * img_height_;
-    //    std::cout << "x offset,y offset:" << x_offset << "," << y_offset
-    //              << std::endl;
 
     return true;
   } else {
@@ -435,13 +432,36 @@ void Scene::calWholeTrajectory() {
   f.detach();
 }
 
-void Scene::saveRay(QString file_str) { return; }
-
 void Scene::calWholeScene() {
   running_flag = true;
-  std::thread f([&]() {
+  //  std::cout << "start cal whole scene" << std::endl;
+  calBound();
 
+  std::string time_prefix =
+      QDateTime::currentDateTimeUtc().toString().toStdString();
+
+  std::ofstream of;
+  std::cout << "file name:" << saving_dir + time_prefix + "sim_data.txt"
+            << std::endl;
+  of.open(saving_dir + time_prefix + "sim_data.txt");
+
+  std::thread f([&]() {
+    for (double x_p = (x_min_); x_p < x_max_; x_p += sample_point_resolution) {
+      for (double y_p = (y_min_); y_p < y_max_;
+           y_p += sample_point_resolution) {
+        if (!running_flag) {
+          return;
+        }
+        Point target_point(x_p, y_p);
+        calRayTracing(target_point);
+        drawScene();
+        //        std::cout << toString(target_point) << std::endl;
+        of << toString(target_point) << std::endl;
+      }
+    }
+    of.close();
   });
+  f.detach();
 }
 
 bool Scene::calBound() {
@@ -476,4 +496,50 @@ bool Scene::calBound() {
   } else {
     return false;
   }
+}
+
+std::string Scene::EnvtoString() {
+  std::string final_str;
+  final_str += "{\"tyep\":\"Env\"";
+  final_str += ",\"lines\":[";
+  for (int i = 0; i < line_list_.size(); ++i) {
+    final_str += line_list_[i].toString();
+    if (i < line_list_.size() - 1) {
+      final_str += ",";
+    } else {
+      final_str += "]";
+    }
+  }
+
+  final_str += "}";
+  return final_str;
+}
+
+std::string Scene::RaytoString() {
+  std::string final_str;
+  final_str += "{\"type\":\"Rays\",\"Rays\":";
+  final_str += "[";
+  for (int i = 0; i < valid_ray_list_.size(); ++i) {
+    final_str += valid_ray_list_[i].toString();
+    if (i < valid_ray_list_.size() - 1) {
+      final_str += ",";
+    } else {
+      final_str += "]";
+    }
+  }
+  final_str += "}";
+  return final_str;
+}
+
+std::string Scene::toString(Point tp) {
+  std::string final_str;
+  final_str += "{\"type\":\"Scene\",\"Env\":";
+  final_str += EnvtoString();
+  final_str += ",\"Rays\":";
+  final_str += RaytoString();
+  final_str += ",\"target_point\":";
+  final_str += tp.toString();
+  final_str += "}";
+
+  return final_str;
 }
